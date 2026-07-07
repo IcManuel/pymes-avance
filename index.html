@@ -129,18 +129,6 @@
   .card.c-dead .dot { background: var(--dead); } .card.c-dead .v { color: var(--dead); }
   .card.c-frag .dot { background: var(--frag); } .card.c-frag .v { color: var(--frag); }
 
-  /* ---------- regla de oro ---------- */
-  .oro { margin-top: 22px; display: flex; gap: 14px; align-items: flex-start;
-    background: linear-gradient(180deg, var(--warn-soft), transparent 140%);
-    border: 1px solid color-mix(in srgb, var(--warn) 40%, var(--line));
-    border-left: 4px solid var(--warn); border-radius: 10px; padding: 14px 18px; }
-  .oro .ico { font-size: 1.2rem; line-height: 1.4; }
-  .oro b { color: var(--warn); font-size: .74rem; text-transform: uppercase; letter-spacing: .08em;
-    font-family: var(--mono); display: block; margin-bottom: 2px; }
-  .oro p { margin: 0; font-size: .9rem; color: var(--ink); }
-  .oro code { font-family: var(--mono); font-size: .82em; background: var(--panel-2);
-    padding: 1px 6px; border-radius: 5px; border: 1px solid var(--line); }
-
   /* ---------- controls ---------- */
   .controls { margin-top: 26px; position: sticky; top: 58px; z-index: 15;
     background: color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter: blur(8px);
@@ -280,17 +268,6 @@
   <div class="stack" id="stack"></div>
 
   <div class="cards" id="cards"></div>
-
-  <div class="oro">
-    <div class="ico">🏅</div>
-    <div>
-      <b>Regla de oro</b>
-      <p>Cada vez que se <strong>termina de migrar una pantalla</strong> (mergeada a <code>dev</code>),
-      hay que <strong>actualizar este tablero</strong>: cambiar su estado a <em>Migrada</em> en
-      <code>docs/avance-migracion.html</code> y re-publicar. El tablero es la fuente de verdad del avance
-      del equipo — si no se actualiza, mentimos sobre cuánto falta.</p>
-    </div>
-  </div>
 
   <div class="controls">
     <div class="ctl-row">
