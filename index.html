@@ -226,6 +226,63 @@
   .leg-item .ex { color: var(--ink-3); }
   @media (max-width: 720px) { .leg-grid { grid-template-columns: 1fr; } }
 
+  /* ---------- tabs ---------- */
+  .tabs { margin-top: 26px; display: flex; gap: 2px; border-bottom: 1px solid var(--line); }
+  .tab { font-family: var(--mono); font-size: .82rem; padding: 11px 18px; border: 0; background: none;
+    color: var(--ink-3); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
+    display: inline-flex; align-items: center; gap: 8px; letter-spacing: .01em; }
+  .tab:hover { color: var(--ink); }
+  .tab.on { color: var(--accent); border-bottom-color: var(--accent); font-weight: 700; }
+  .view[hidden] { display: none; }
+
+  /* ---------- dashboard ---------- */
+  .dash-sec { margin-top: 30px; }
+  .dash-sec > h3 { margin: 0 0 3px; font-size: 1.1rem; letter-spacing: -.01em; }
+  .dash-sec > .hint { margin: 0 0 16px; color: var(--ink-3); font-size: .84rem; max-width: 68ch; }
+  .agg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(232px, 1fr)); gap: 12px; }
+  .agg { text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    padding: 14px 16px; cursor: pointer; box-shadow: var(--shadow);
+    transition: transform .1s, border-color .15s; font: inherit; color: inherit; }
+  .agg:hover { transform: translateY(-2px); border-color: var(--line-strong); }
+  .agg .top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  .agg .nm { font-weight: 700; text-transform: capitalize; font-size: .98rem; }
+  .agg .pct { font-family: var(--mono); font-variant-numeric: tabular-nums; font-weight: 700;
+    font-size: 1.15rem; color: var(--accent); }
+  .agg .desc { font-size: .74rem; color: var(--ink-3); margin-top: 1px; }
+  .agg .bar { margin-top: 12px; height: 9px; border-radius: 99px; overflow: hidden; display: flex;
+    background: var(--panel-2); border: 1px solid var(--line); }
+  .agg .bar > i { display: block; height: 100%; }
+  .agg .bar .m { background: var(--good); } .agg .bar .p { background: var(--warn); opacity: .5; }
+  .agg .nums { margin-top: 9px; display: flex; gap: 12px; font-family: var(--mono); font-size: .72rem;
+    color: var(--ink-3); font-variant-numeric: tabular-nums; flex-wrap: wrap; }
+  .agg .nums b { color: var(--ink-2); font-weight: 700; }
+
+  /* ---------- matrix ---------- */
+  .matrix-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px;
+    background: var(--panel); box-shadow: var(--shadow); }
+  .matrix { border-collapse: collapse; width: 100%; min-width: 660px; font-family: var(--mono); }
+  .matrix thead th { font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-3);
+    font-weight: 600; padding: 12px 8px; border-bottom: 1px solid var(--line); background: var(--panel);
+    white-space: nowrap; }
+  .matrix thead th.rowhead { text-align: left; }
+  .matrix tbody th { text-align: left; padding: 0 14px; font-size: .82rem; font-weight: 600; color: var(--ink);
+    text-transform: capitalize; white-space: nowrap; position: sticky; left: 0; background: var(--panel);
+    border-right: 1px solid var(--line); }
+  .matrix td { border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); padding: 0; }
+  .matrix tbody tr:last-child td, .matrix tbody tr:last-child th { border-bottom: 0; }
+  .cell { display: block; padding: 9px 6px; cursor: pointer; min-width: 78px; text-align: center;
+    transition: box-shadow .1s; }
+  .cell:hover { box-shadow: inset 0 0 0 2px var(--accent); }
+  .cell .c-n { font-variant-numeric: tabular-nums; font-weight: 700; font-size: .92rem; color: var(--ink); }
+  .cell .c-p { font-size: .66rem; color: var(--ink-2); margin-top: 1px; opacity: .85; }
+  .cell.void { cursor: default; } .cell.void:hover { box-shadow: none; }
+  .cell.void .c-n { color: var(--ink-3); opacity: .25; }
+  .mtx-legend { display: flex; align-items: center; gap: 10px; margin-top: 10px; font-family: var(--mono);
+    font-size: .72rem; color: var(--ink-3); flex-wrap: wrap; }
+  .mtx-scale { display: flex; height: 10px; width: 120px; border-radius: 99px; overflow: hidden;
+    border: 1px solid var(--line); }
+  .mtx-scale > i { flex: 1; }
+
   footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--line);
     display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
     font-family: var(--mono); font-size: .72rem; color: var(--ink-3); }
@@ -269,6 +326,40 @@
 
   <div class="cards" id="cards"></div>
 
+  <div class="tabs" role="tablist">
+    <button class="tab on" data-tab="dash" role="tab">▚ Dashboard</button>
+    <button class="tab" data-tab="inv" role="tab">▤ Inventario</button>
+  </div>
+
+  <div id="view-dash" class="view">
+    <div class="dash-sec">
+      <h3>Por tipo de pantalla</h3>
+      <p class="hint">Avance agregado de <em>todos los módulos juntos</em>: todas las
+      <em>mantenimientos</em>, todas las <em>consultas</em>, etc. Clic en una tarjeta para verlas en el
+      inventario.</p>
+      <div class="agg-grid" id="aggType"></div>
+    </div>
+    <div class="dash-sec">
+      <h3>Por módulo</h3>
+      <p class="hint">Avance de cada área de negocio, ordenado por tamaño (pantallas vivas). Clic para
+      filtrar el inventario por ese módulo.</p>
+      <div class="agg-grid" id="aggMod"></div>
+    </div>
+    <div class="dash-sec">
+      <h3>Matriz módulo × tipo</h3>
+      <p class="hint">La vista macro: cada celda es el nº de pantallas de esa carpeta; el verde indica el
+      <em>% migrado de las vivas</em>. Clic en una celda para abrir esa combinación exacta.</p>
+      <div class="matrix-wrap"><table class="matrix" id="matrix"></table></div>
+      <div class="mtx-legend">
+        <span>0%</span>
+        <span class="mtx-scale"><i style="background:var(--panel-2)"></i><i style="background:color-mix(in srgb,var(--good) 35%,transparent)"></i><i style="background:color-mix(in srgb,var(--good) 70%,transparent)"></i></span>
+        <span>100% migrado</span>
+        <span style="margin-left:8px">· celda tenue gris = solo pantallas inactivas (sin uso / fragmentos)</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-inv" class="view" hidden>
   <div class="controls">
     <div class="ctl-row">
       <div class="search">
@@ -291,6 +382,7 @@
   </div>
 
   <div id="modules"></div>
+  </div><!-- /view-inv -->
 
   <details class="legend">
     <summary>Cómo leer este tablero — estructura del legacy y estados</summary>
@@ -388,10 +480,10 @@ function paintSummary(){
     </button>`).join("");
   document.querySelectorAll(".card").forEach(c => c.onclick = () => {
     const id = c.dataset.est;
-    if (state.estados.has(id) && state.estados.size===ESTADOS.length){ state.estados = new Set([id]); }
-    else if (state.estados.has(id)){ state.estados.delete(id); if(!state.estados.size) state.estados = new Set(ESTADOS.map(x=>x.id)); }
-    else { state.estados.add(id); }
-    render();
+    state.estados = new Set([id]);
+    state.types.clear(); state.mods.clear(); state.q = ""; $("#q").value = "";
+    switchTab("inv");
+    $("#view-inv").scrollIntoView({ behavior: "smooth", block: "start" });
   });
 }
 function seg(cls, n, tot, title){
@@ -430,16 +522,15 @@ function paintChips(){
 }
 
 /* ---------- filtered list ---------- */
-function filtered(){
+function matchFilters(p, ignoreEstado){
   const q = state.q.trim().toLowerCase();
-  return PAGES.filter(p => {
-    if(!state.estados.has(p.estado)) return false;
-    if(state.types.size && !state.types.has(p.type)) return false;
-    if(state.mods.size && !state.mods.has(p.module)) return false;
-    if(q && !(p.name.toLowerCase().includes(q) || (p.nombre||"").toLowerCase().includes(q) || p.module.includes(q))) return false;
-    return true;
-  });
+  if(!ignoreEstado && !state.estados.has(p.estado)) return false;
+  if(state.types.size && !state.types.has(p.type)) return false;
+  if(state.mods.size && !state.mods.has(p.module)) return false;
+  if(q && !(p.name.toLowerCase().includes(q) || (p.nombre||"").toLowerCase().includes(q) || p.module.includes(q))) return false;
+  return true;
 }
+function filtered(){ return PAGES.filter(p => matchFilters(p, false)); }
 
 function render(){
   paintSummary(); paintChips();
@@ -454,9 +545,11 @@ function render(){
   if(!modNames.length){ cont.innerHTML = `<div class="empty">Sin resultados con estos filtros.</div>`; return; }
 
   cont.innerHTML = modNames.map(m => {
-    const all = PAGES.filter(p=>p.module===m);
-    const mig = all.filter(p=>p.estado==="migrada").length;
-    const pen = all.filter(p=>p.estado==="pendiente").length;
+    // Avance del módulo acorde a los filtros activos (tipo/módulo/búsqueda), ignorando solo el toggle de
+    // estado: así bancos→mantenimientos muestra 100% (mntBanco), no el 14% del módulo completo.
+    const scope = PAGES.filter(p => p.module===m && matchFilters(p, true));
+    const mig = scope.filter(p=>p.estado==="migrada").length;
+    const pen = scope.filter(p=>p.estado==="pendiente").length;
     const vivas = mig+pen;
     const pct = vivas ? Math.round(100*mig/vivas) : 0;
     const shown = Object.values(mods[m]).reduce((a,b)=>a+b.length,0);
@@ -502,9 +595,108 @@ function rowHTML(p){
     </div>`;
 }
 
+/* ---------- dashboard (vista macro) ---------- */
+const TYPE_ORDER = ["mantenimientos","transacciones","consultas","varios","(raíz)"];
+function typeSort(a,b){
+  const ia=TYPE_ORDER.indexOf(a), ib=TYPE_ORDER.indexOf(b);
+  return ((ia<0?99:ia)-(ib<0?99:ib)) || a.localeCompare(b);
+}
+function aggBy(keyFn){
+  const g = {};
+  PAGES.forEach(p => {
+    const k = keyFn(p);
+    (g[k] ??= {mig:0,pen:0,dead:0,frag:0,_key:k});
+    if(p.estado==="migrada") g[k].mig++;
+    else if(p.estado==="pendiente") g[k].pen++;
+    else if(p.estado==="muerta") g[k].dead++;
+    else g[k].frag++;
+  });
+  Object.values(g).forEach(v => { v.vivas=v.mig+v.pen; v.total=v.mig+v.pen+v.dead+v.frag;
+    v.pct = v.vivas ? 100*v.mig/v.vivas : 0; });
+  return g;
+}
+function aggCard(name, v, desc){
+  const w = v.vivas ? {m:100*v.mig/v.vivas, p:100*v.pen/v.vivas} : {m:0,p:0};
+  const fuera = v.dead + v.frag;
+  return `<button class="agg" data-k="${name}">
+    <div class="top"><span class="nm">${name}</span><span class="pct">${v.vivas?Math.round(v.pct)+"%":"—"}</span></div>
+    <div class="desc">${desc}</div>
+    <div class="bar"><i class="m" style="width:${w.m}%"></i><i class="p" style="width:${w.p}%"></i></div>
+    <div class="nums"><span><b>${v.mig}</b> migr.</span><span><b>${v.pen}</b> pend.</span>${fuera?`<span>${fuera} fuera</span>`:""}</div>
+  </button>`;
+}
+function matrixCell(v){
+  if(!v || v.total===0) return `<td><span class="cell void"><span class="c-n">·</span></span></td>`;
+  const shade = v.vivas
+    ? `color-mix(in srgb, var(--good) ${Math.round(v.pct*0.7)}%, transparent)`
+    : `color-mix(in srgb, var(--frag) 13%, transparent)`;
+  const sub = v.vivas ? `${Math.round(v.pct)}%` : `inact.`;
+  return `<td><span class="cell" data-m="${v._m}" data-t="${v._t}" style="background:${shade}"
+    title="${v._m} / ${v._t} · ${v.total} pantallas · ${v.mig} migradas, ${v.pen} pend., ${v.dead+v.frag} fuera">
+    <span class="c-n">${v.total}</span><span class="c-p">${sub}</span></span></td>`;
+}
+function renderDashboard(){
+  // por tipo (agregado de todos los módulos)
+  const byType = aggBy(p => p.type);
+  const typeWrap = $("#aggType");
+  typeWrap.innerHTML = Object.keys(byType).sort(typeSort)
+    .map(t => aggCard(t, byType[t], TYPE_DESC[t] || "")).join("");
+  typeWrap.querySelectorAll(".agg").forEach(a => a.onclick = () => jumpTo({type:a.dataset.k}));
+
+  // por módulo (orden por tamaño de vivas)
+  const byMod = aggBy(p => p.module);
+  const modOrder = Object.keys(byMod).sort((a,b) => byMod[b].vivas-byMod[a].vivas || a.localeCompare(b));
+  const modWrap = $("#aggMod");
+  modWrap.innerHTML = modOrder
+    .map(m => aggCard(m, byMod[m], `${byMod[m].vivas} vivas · ${byMod[m].total} archivos`)).join("");
+  modWrap.querySelectorAll(".agg").forEach(a => a.onclick = () => jumpTo({module:a.dataset.k}));
+
+  // matriz módulo × tipo
+  const cellAgg = {};
+  PAGES.forEach(p => {
+    const k = p.module+"|"+p.type;
+    (cellAgg[k] ??= {mig:0,pen:0,dead:0,frag:0,_m:p.module,_t:p.type});
+    const c = cellAgg[k];
+    if(p.estado==="migrada") c.mig++; else if(p.estado==="pendiente") c.pen++;
+    else if(p.estado==="muerta") c.dead++; else c.frag++;
+  });
+  Object.values(cellAgg).forEach(v => { v.vivas=v.mig+v.pen; v.total=v.mig+v.pen+v.dead+v.frag;
+    v.pct = v.vivas ? 100*v.mig/v.vivas : 0; });
+  const types = [...new Set(PAGES.map(p=>p.type))].sort(typeSort);
+  const modsAlpha = [...new Set(PAGES.map(p=>p.module))].sort();
+  let html = "<thead><tr><th class='rowhead'>Módulo</th>" +
+    types.map(t => `<th>${t}</th>`).join("") + "</tr></thead><tbody>";
+  html += modsAlpha.map(m =>
+    `<tr><th>${m}</th>` + types.map(t => matrixCell(cellAgg[m+"|"+t])).join("") + "</tr>"
+  ).join("");
+  html += "</tbody>";
+  $("#matrix").innerHTML = html;
+  $("#matrix").querySelectorAll(".cell:not(.void)").forEach(c =>
+    c.onclick = () => jumpTo({module:c.dataset.m, type:c.dataset.t}));
+}
+
+function switchTab(name){
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("on", t.dataset.tab===name));
+  const dash = name !== "inv";
+  $("#view-dash").hidden = !dash;
+  $("#view-inv").hidden = dash;
+  if(dash) renderDashboard(); else render();
+}
+function jumpTo({module, type}){
+  state.estados = new Set(ESTADOS.map(e=>e.id));
+  state.types = type ? new Set([type]) : new Set();
+  state.mods = module ? new Set([module]) : new Set();
+  state.onlyPend = false; $("#onlyPend").checked = false;
+  state.q = ""; $("#q").value = "";
+  switchTab("inv");
+  $("#view-inv").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 $("#q").addEventListener("input", e => { state.q = e.target.value; render(); });
 $("#onlyPend").addEventListener("change", e => { state.onlyPend = e.target.checked; render(); });
-$("#gendate").textContent = document.currentScript?.dataset?.gen || "2026-07-07";
+$("#gendate").textContent = "2026-07-07";
+document.querySelectorAll(".tab").forEach(t => t.onclick = () => switchTab(t.dataset.tab));
 
-render();
+paintSummary();
+switchTab("dash");
 </script>
