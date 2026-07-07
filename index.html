@@ -1,0 +1,533 @@
+<title>DynamoPymes · Avance de migración</title>
+<style>
+  :root {
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code", Menlo, Consolas, monospace;
+
+    --bg: #eef2f7;
+    --panel: #ffffff;
+    --panel-2: #f4f7fb;
+    --line: #d9e1ea;
+    --line-strong: #c3ccd7;
+    --ink: #14202c;
+    --ink-2: #47566a;
+    --ink-3: #7c8a9c;
+    --accent: #1683ce;
+    --accent-soft: #e2f0fb;
+    --good: #14884f;
+    --good-soft: #dcf1e6;
+    --warn: #b5750d;
+    --warn-soft: #f8ecd4;
+    --dead: #a2453f;
+    --dead-soft: #f2e0de;
+    --frag: #6b7787;
+    --frag-soft: #e7ebf0;
+    --shadow: 0 1px 2px rgba(20,32,44,.06), 0 8px 24px rgba(20,32,44,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d141c;
+      --panel: #141d27;
+      --panel-2: #19232f;
+      --line: #253240;
+      --line-strong: #34455673;
+      --ink: #e8eef4;
+      --ink-2: #a4b2c1;
+      --ink-3: #74828f;
+      --accent: #3aa6ec;
+      --accent-soft: #14293a;
+      --good: #3bc17f;
+      --good-soft: #12281d;
+      --warn: #e0a83a;
+      --warn-soft: #2c2413;
+      --dead: #dd7d76;
+      --dead-soft: #2e1917;
+      --frag: #8593a2;
+      --frag-soft: #1d2833;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 32px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #eef2f7; --panel: #ffffff; --panel-2: #f4f7fb; --line: #d9e1ea; --line-strong: #c3ccd7;
+    --ink: #14202c; --ink-2: #47566a; --ink-3: #7c8a9c; --accent: #1683ce; --accent-soft: #e2f0fb;
+    --good: #14884f; --good-soft: #dcf1e6; --warn: #b5750d; --warn-soft: #f8ecd4;
+    --dead: #a2453f; --dead-soft: #f2e0de; --frag: #6b7787; --frag-soft: #e7ebf0;
+    --shadow: 0 1px 2px rgba(20,32,44,.06), 0 8px 24px rgba(20,32,44,.06);
+  }
+  :root[data-theme="dark"] {
+    --bg: #0d141c; --panel: #141d27; --panel-2: #19232f; --line: #253240; --line-strong: #34455673;
+    --ink: #e8eef4; --ink-2: #a4b2c1; --ink-3: #74828f; --accent: #3aa6ec; --accent-soft: #14293a;
+    --good: #3bc17f; --good-soft: #12281d; --warn: #e0a83a; --warn-soft: #2c2413;
+    --dead: #dd7d76; --dead-soft: #2e1917; --frag: #8593a2; --frag-soft: #1d2833;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 32px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: var(--sans); line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 20px 72px; }
+  a { color: var(--accent); }
+
+  /* ---------- header ---------- */
+  header {
+    position: sticky; top: 0; z-index: 20;
+    background: color-mix(in srgb, var(--bg) 86%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .head-in { max-width: 1200px; margin: 0 auto; padding: 14px 20px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: baseline; gap: 10px; }
+  .brand b { font-size: 1.02rem; font-weight: 700; letter-spacing: -.01em; }
+  .brand span { font-family: var(--mono); font-size: .72rem; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: .08em; }
+  .head-prog { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .head-prog .num { font-family: var(--mono); font-variant-numeric: tabular-nums;
+    font-weight: 700; font-size: 1.05rem; color: var(--accent); }
+  .head-bar { width: 160px; height: 7px; border-radius: 99px; background: var(--panel-2);
+    overflow: hidden; border: 1px solid var(--line); }
+  .head-bar > i { display: block; height: 100%; background: var(--good); }
+
+  /* ---------- hero / summary ---------- */
+  .hero { padding: 34px 0 8px; display: grid; grid-template-columns: minmax(0,1fr) auto;
+    gap: 28px; align-items: end; }
+  .hero h1 { margin: 0 0 6px; font-size: 1.9rem; letter-spacing: -.02em; text-wrap: balance; }
+  .hero p { margin: 0; color: var(--ink-2); max-width: 60ch; }
+  .dial { text-align: right; }
+  .dial .big { font-family: var(--mono); font-variant-numeric: tabular-nums;
+    font-weight: 700; font-size: 3.4rem; line-height: .9; letter-spacing: -.03em; color: var(--ink); }
+  .dial .big small { color: var(--accent); }
+  .dial .cap { font-family: var(--mono); font-size: .74rem; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: .06em; margin-top: 6px; }
+
+  .stack { margin-top: 22px; height: 16px; border-radius: 6px; overflow: hidden;
+    display: flex; border: 1px solid var(--line); background: var(--panel); }
+  .stack > i { height: 100%; display: block; }
+  .stack .s-mig { background: var(--good); }
+  .stack .s-pen { background: var(--warn); }
+  .stack .s-dead { background: var(--dead); opacity: .5; }
+  .stack .s-frag { background: var(--frag); opacity: .35; }
+
+  /* summary cards */
+  .cards { margin-top: 18px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    padding: 14px 16px; cursor: pointer; transition: border-color .15s, transform .1s, box-shadow .15s;
+    box-shadow: var(--shadow); position: relative; text-align: left; }
+  .card:hover { transform: translateY(-2px); border-color: var(--line-strong); }
+  .card.off { opacity: .42; }
+  .card .k { font-family: var(--mono); font-size: .72rem; text-transform: uppercase;
+    letter-spacing: .06em; color: var(--ink-3); display: flex; align-items: center; gap: 8px; }
+  .card .k .dot { width: 10px; height: 10px; border-radius: 3px; }
+  .card .v { font-family: var(--mono); font-variant-numeric: tabular-nums; font-weight: 700;
+    font-size: 1.7rem; margin-top: 6px; letter-spacing: -.02em; }
+  .card .sub { font-size: .76rem; color: var(--ink-3); margin-top: 2px; }
+  .card.c-mig .dot { background: var(--good); } .card.c-mig .v { color: var(--good); }
+  .card.c-pen .dot { background: var(--warn); } .card.c-pen .v { color: var(--warn); }
+  .card.c-dead .dot { background: var(--dead); } .card.c-dead .v { color: var(--dead); }
+  .card.c-frag .dot { background: var(--frag); } .card.c-frag .v { color: var(--frag); }
+
+  /* ---------- regla de oro ---------- */
+  .oro { margin-top: 22px; display: flex; gap: 14px; align-items: flex-start;
+    background: linear-gradient(180deg, var(--warn-soft), transparent 140%);
+    border: 1px solid color-mix(in srgb, var(--warn) 40%, var(--line));
+    border-left: 4px solid var(--warn); border-radius: 10px; padding: 14px 18px; }
+  .oro .ico { font-size: 1.2rem; line-height: 1.4; }
+  .oro b { color: var(--warn); font-size: .74rem; text-transform: uppercase; letter-spacing: .08em;
+    font-family: var(--mono); display: block; margin-bottom: 2px; }
+  .oro p { margin: 0; font-size: .9rem; color: var(--ink); }
+  .oro code { font-family: var(--mono); font-size: .82em; background: var(--panel-2);
+    padding: 1px 6px; border-radius: 5px; border: 1px solid var(--line); }
+
+  /* ---------- controls ---------- */
+  .controls { margin-top: 26px; position: sticky; top: 58px; z-index: 15;
+    background: color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter: blur(8px);
+    padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .ctl-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .ctl-row + .ctl-row { margin-top: 10px; }
+  .search { flex: 1 1 260px; min-width: 220px; display: flex; align-items: center; gap: 8px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 9px; padding: 8px 12px; }
+  .search input { border: 0; background: transparent; outline: none; color: var(--ink);
+    font-family: var(--mono); font-size: .84rem; width: 100%; }
+  .search svg { flex: none; opacity: .5; }
+  .lbl { font-family: var(--mono); font-size: .68rem; text-transform: uppercase; letter-spacing: .07em;
+    color: var(--ink-3); margin-right: 2px; align-self: center; }
+  .chip { font-family: var(--mono); font-size: .76rem; padding: 5px 11px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--panel); color: var(--ink-2); cursor: pointer;
+    white-space: nowrap; transition: all .12s; display: inline-flex; align-items: center; gap: 6px; }
+  .chip:hover { border-color: var(--line-strong); color: var(--ink); }
+  .chip.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .chip .c { font-variant-numeric: tabular-nums; opacity: .7; font-size: .92em; }
+  .chip.on .c { opacity: .9; }
+  .toggle { margin-left: auto; }
+
+  /* ---------- module sections ---------- */
+  #modules { margin-top: 8px; }
+  .mod { margin-top: 22px; }
+  .mod-head { display: flex; align-items: center; gap: 14px; padding: 8px 2px; cursor: pointer;
+    border-bottom: 1px solid var(--line); }
+  .mod-head .caret { transition: transform .15s; color: var(--ink-3); font-size: .8rem; }
+  .mod.closed .caret { transform: rotate(-90deg); }
+  .mod-name { font-size: 1.12rem; font-weight: 700; letter-spacing: -.01em; text-transform: capitalize; }
+  .mod-meta { font-family: var(--mono); font-size: .74rem; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; }
+  .mod-bar { margin-left: auto; width: 220px; max-width: 40vw; height: 8px; border-radius: 99px;
+    background: var(--panel-2); border: 1px solid var(--line); overflow: hidden; display: flex; }
+  .mod-bar > i { height: 100%; display: block; }
+  .mod-bar .b-mig { background: var(--good); }
+  .mod-bar .b-pen { background: var(--warn); opacity: .55; }
+  .mod-pct { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: .82rem;
+    font-weight: 700; color: var(--ink-2); width: 44px; text-align: right; }
+  .mod.closed .mod-body { display: none; }
+
+  .type-grp { margin-top: 14px; }
+  .type-head { font-family: var(--mono); font-size: .72rem; text-transform: uppercase;
+    letter-spacing: .08em; color: var(--ink-3); display: flex; align-items: baseline; gap: 10px;
+    padding: 2px 2px 8px; }
+  .type-head .desc { text-transform: none; letter-spacing: 0; color: var(--ink-3); opacity: .8;
+    font-family: var(--sans); font-size: .74rem; }
+
+  .rows { display: grid; gap: 6px; }
+  .row { display: grid; grid-template-columns: 118px minmax(0,1.1fr) minmax(0,1.3fr) auto;
+    gap: 14px; align-items: center; background: var(--panel); border: 1px solid var(--line);
+    border-left: 3px solid var(--line); border-radius: 9px; padding: 9px 14px; }
+  .row.e-migrada { border-left-color: var(--good); }
+  .row.e-pendiente { border-left-color: var(--warn); }
+  .row.e-muerta { border-left-color: var(--dead); }
+  .row.e-fragmento { border-left-color: var(--frag); }
+  .pill { font-family: var(--mono); font-size: .68rem; text-transform: uppercase; letter-spacing: .04em;
+    padding: 3px 8px; border-radius: 6px; font-weight: 600; white-space: nowrap; width: fit-content;
+    display: inline-flex; align-items: center; gap: 5px; }
+  .pill .dot { width: 7px; height: 7px; border-radius: 2px; }
+  .p-migrada { background: var(--good-soft); color: var(--good); } .p-migrada .dot { background: var(--good); }
+  .p-pendiente { background: var(--warn-soft); color: var(--warn); } .p-pendiente .dot { background: var(--warn); }
+  .p-muerta { background: var(--dead-soft); color: var(--dead); } .p-muerta .dot { background: var(--dead); }
+  .p-fragmento { background: var(--frag-soft); color: var(--frag); } .p-fragmento .dot { background: var(--frag); }
+  .r-name { font-family: var(--mono); font-size: .84rem; font-weight: 600; color: var(--ink);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .r-desc { font-size: .8rem; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis;
+    white-space: nowrap; }
+  .r-meta { font-family: var(--mono); font-size: .72rem; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; display: flex; gap: 12px; white-space: nowrap; }
+  .r-meta b { color: var(--ink-2); font-weight: 600; }
+  .r-meta .mut { opacity: .55; }
+
+  .empty { text-align: center; color: var(--ink-3); padding: 60px 0; font-family: var(--mono);
+    font-size: .85rem; }
+
+  /* ---------- legend ---------- */
+  details.legend { margin-top: 30px; background: var(--panel); border: 1px solid var(--line);
+    border-radius: 12px; padding: 4px 18px; box-shadow: var(--shadow); }
+  details.legend > summary { cursor: pointer; padding: 12px 0; font-weight: 600; font-size: .95rem;
+    list-style: none; display: flex; align-items: center; gap: 10px; }
+  details.legend > summary::-webkit-details-marker { display: none; }
+  details.legend > summary::before { content: "＋"; font-family: var(--mono); color: var(--ink-3); }
+  details.legend[open] > summary::before { content: "－"; }
+  .leg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 8px 0 20px; }
+  .leg-grid h4 { margin: 0 0 10px; font-family: var(--mono); font-size: .72rem; text-transform: uppercase;
+    letter-spacing: .07em; color: var(--ink-3); }
+  .leg-grid p { margin: 0 0 14px; font-size: .86rem; color: var(--ink-2); }
+  .path { font-family: var(--mono); font-size: .82rem; background: var(--panel-2); border: 1px solid var(--line);
+    border-radius: 8px; padding: 10px 12px; color: var(--ink); overflow-x: auto; }
+  .path .m { color: var(--accent); } .path .t { color: var(--warn); } .path .p { color: var(--good); }
+  .leg-list { display: grid; gap: 8px; }
+  .leg-item { display: grid; grid-template-columns: 130px 1fr; gap: 10px; font-size: .84rem; align-items: baseline; }
+  .leg-item .tag { font-family: var(--mono); font-size: .74rem; color: var(--ink); font-weight: 600; }
+  .leg-item .ex { color: var(--ink-3); }
+  @media (max-width: 720px) { .leg-grid { grid-template-columns: 1fr; } }
+
+  footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--line);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+    font-family: var(--mono); font-size: .72rem; color: var(--ink-3); }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; } .dial { text-align: left; }
+    .cards { grid-template-columns: repeat(2, 1fr); }
+    .row { grid-template-columns: 100px 1fr; }
+    .r-desc, .r-meta { grid-column: 2; }
+    .r-meta { justify-content: flex-start; }
+    .mod-bar { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+<header>
+  <div class="head-in">
+    <div class="brand"><b>DynamoPymes</b><span>Migración JSF → React</span></div>
+    <div class="head-prog">
+      <div class="head-bar"><i id="hbar"></i></div>
+      <div class="num" id="hnum">—</div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <div>
+      <h1>Tablero de avance de la migración</h1>
+      <p>Inventario completo de las pantallas <code>.xhtml</code> del sistema legacy, agrupadas por
+      su estructura de carpetas. Mide cuánto llevamos, qué falta y qué queda fuera de alcance.</p>
+    </div>
+    <div class="dial">
+      <div class="big"><span id="dpct">17.6</span><small>%</small></div>
+      <div class="cap">de pantallas <em>vivas</em> migradas · <span id="dfrac">36 / 204</span></div>
+    </div>
+  </section>
+
+  <div class="stack" id="stack"></div>
+
+  <div class="cards" id="cards"></div>
+
+  <div class="oro">
+    <div class="ico">🏅</div>
+    <div>
+      <b>Regla de oro</b>
+      <p>Cada vez que se <strong>termina de migrar una pantalla</strong> (mergeada a <code>dev</code>),
+      hay que <strong>actualizar este tablero</strong>: cambiar su estado a <em>Migrada</em> en
+      <code>docs/avance-migracion.html</code> y re-publicar. El tablero es la fuente de verdad del avance
+      del equipo — si no se actualiza, mentimos sobre cuánto falta.</p>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="ctl-row">
+      <div class="search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>
+        <input id="q" type="search" placeholder="Buscar pantalla, nombre o módulo…" autocomplete="off" />
+      </div>
+      <span class="lbl">Estado</span>
+      <div id="estadoChips" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+    </div>
+    <div class="ctl-row">
+      <span class="lbl">Tipo</span>
+      <div id="typeChips" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+      <label class="chip toggle" style="cursor:pointer"><input type="checkbox" id="onlyPend" style="margin:0 4px 0 0">solo con pendientes</label>
+    </div>
+    <div class="ctl-row">
+      <span class="lbl">Módulo</span>
+      <div id="modChips" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+    </div>
+  </div>
+
+  <div id="modules"></div>
+
+  <details class="legend">
+    <summary>Cómo leer este tablero — estructura del legacy y estados</summary>
+    <div class="leg-grid">
+      <div>
+        <h4>Estructura de carpetas del legacy</h4>
+        <p>Cada pantalla es un archivo <code>.xhtml</code> ubicado según su <strong>módulo</strong> de
+        negocio y su <strong>tipo</strong>. Así es como agrupamos:</p>
+        <div class="path">WebContent/paginas/<span class="m">&lt;módulo&gt;</span>/<span class="t">&lt;tipo&gt;</span>/<span class="p">&lt;pantalla&gt;</span>.xhtml</div>
+        <p style="margin-top:14px">El <strong>módulo</strong> es el área contable/operativa
+        (<code>cxc</code>, <code>contabilidad</code>, <code>inventarios</code>…). El <strong>tipo</strong>
+        clasifica la pantalla:</p>
+        <div class="leg-list">
+          <div class="leg-item"><span class="tag">mantenimientos</span><span class="ex">Maestros y catálogos (CRUD): clientes, cuentas, políticas…</span></div>
+          <div class="leg-item"><span class="tag">transacciones</span><span class="ex">Documentos y operaciones: facturar, asientos, comprobantes…</span></div>
+          <div class="leg-item"><span class="tag">consultas</span><span class="ex">Listados y reportes de consulta / búsqueda.</span></div>
+          <div class="leg-item"><span class="tag">varios</span><span class="ex">Utilitarios y procesos auxiliares.</span></div>
+          <div class="leg-item"><span class="tag">(raíz)</span><span class="ex">Página suelta en la raíz del módulo.</span></div>
+        </div>
+      </div>
+      <div>
+        <h4>Estados</h4>
+        <div class="leg-list">
+          <div class="leg-item"><span class="pill p-migrada"><span class="dot"></span>Migrada</span><span class="ex">Ya reconstruida en React y mergeada a <code>dev</code>.</span></div>
+          <div class="leg-item"><span class="pill p-pendiente"><span class="dot"></span>Pendiente</span><span class="ex">Pantalla real, en menús activos, aún por migrar.</span></div>
+          <div class="leg-item"><span class="pill p-muerta"><span class="dot"></span>Sin uso</span><span class="ex">Tiene página pero <strong>0 menús activos</strong> → candidata a descartar.</span></div>
+          <div class="leg-item"><span class="pill p-fragmento"><span class="dot"></span>Fragmento</span><span class="ex"><code>.xhtml</code> que es include / composite / picker, <strong>no</strong> una pantalla independiente.</span></div>
+        </div>
+        <p style="margin-top:16px"><strong>El porcentaje</strong> mide <em>Migradas ÷ (Migradas + Pendientes)</em>
+        — es decir, sobre las pantallas <strong>vivas</strong>. Las <em>Sin uso</em> y <em>Fragmentos</em> se
+        consideran fuera de alcance por defecto (el equipo puede reclasificar editando el archivo).</p>
+        <p><strong>Menús</strong> = nº de nodos de menú activos que apuntan a la pantalla ·
+        <strong>Perm.</strong> = concesiones a usuarios (proxy de uso real).</p>
+      </div>
+    </div>
+  </details>
+
+  <footer>
+    <span id="foot-gen">Generado desde el legacy · <span id="gendate"></span></span>
+    <span>Fuente: <code>WebContent/paginas/**/*.xhtml</code> + <code>programa</code>/<code>dmenu</code></span>
+  </footer>
+</div>
+
+<script>
+const PAGES = /*__DATA__*/[{"module": "bancos", "type": "consultas", "name": "conListaCheque", "nombre": "LISTADO DE CHEQUES EMITIDOS", "prg": 510, "dmenu": 29, "grants": 3969, "estado": "pendiente"}, {"module": "bancos", "type": "consultas", "name": "conListadoConcilia", "nombre": "conListadoConcilia.jsf", "prg": 287, "dmenu": 33, "grants": 3973, "estado": "pendiente"}, {"module": "bancos", "type": "consultas", "name": "conNotasDebito", "nombre": "conNotaDebito.jsf", "prg": 208, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "bancos", "type": "mantenimientos", "name": "mntBanco", "nombre": "MANTENIMIENTO DE BANCOS", "prg": 104, "dmenu": 32, "grants": 3649, "estado": "migrada"}, {"module": "bancos", "type": "transacciones", "name": "trnCheque", "nombre": "trnCheque.jsf", "prg": 352, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "bancos", "type": "transacciones", "name": "trnConcilia", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "bancos", "type": "transacciones", "name": "trnDepositoMasa", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "bancos", "type": "transacciones", "name": "trnNotasDebito", "nombre": "TRNNOTASDEBITO.JSF", "prg": 177, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "bancos", "type": "transacciones", "name": "trnRotacionBancos", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "bancos", "type": "varios", "name": "iCheque", "nombre": "iCheque.jsf", "prg": 206, "dmenu": 32, "grants": 3642, "estado": "pendiente"}, {"module": "bancos", "type": "varios", "name": "iDeposito", "nombre": "iDeposito.jsf", "prg": 205, "dmenu": 36, "grants": 3646, "estado": "pendiente"}, {"module": "bancos", "type": "varios", "name": "iDepositoMasa", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "bancos", "type": "varios", "name": "iNotaCredito", "nombre": "iNotasCredito.jsf", "prg": 207, "dmenu": 32, "grants": 3642, "estado": "pendiente"}, {"module": "bancos", "type": "varios", "name": "iNotaDebito", "nombre": "INGRESO NOTA DEBITO BANCARIA", "prg": 178, "dmenu": 33, "grants": 3642, "estado": "pendiente"}, {"module": "caja", "type": "consultas", "name": "conCierre", "nombre": "conCierre.jsf", "prg": 228, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "caja", "type": "transacciones", "name": "trnCierre", "nombre": "trnCierre.jsf", "prg": 211, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "caja", "type": "transacciones", "name": "trnCierreDesvincular", "nombre": "trnCierreDesvincular.jsf", "prg": 817, "dmenu": 1, "grants": 6, "estado": "pendiente"}, {"module": "caja", "type": "varios", "name": "iCierre", "nombre": "iCierre.jsf", "prg": 210, "dmenu": 47, "grants": 3732, "estado": "pendiente"}, {"module": "comercializacion", "type": "consultas", "name": "conBitacorasPreciosEmpredial", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comercializacion", "type": "consultas", "name": "conComisiones", "nombre": "conComisiones.jsf", "prg": 466, "dmenu": 28, "grants": 3990, "estado": "pendiente"}, {"module": "comercializacion", "type": "consultas", "name": "conComisionesCovensa", "nombre": "COMISIONES COVENSA", "prg": 509, "dmenu": 22, "grants": 3349, "estado": "pendiente"}, {"module": "comercializacion", "type": "consultas", "name": "conCRMAutos", "nombre": "conCRMAutos.jsf", "prg": 474, "dmenu": 2, "grants": 2206, "estado": "pendiente"}, {"module": "comercializacion", "type": "consultas", "name": "conFacturasConsolidar", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comercializacion", "type": "consultas", "name": "conFacturasxDespachar", "nombre": "conFacturasxDespachar.jsf", "prg": 247, "dmenu": 34, "grants": 3683, "estado": "pendiente"}, {"module": "comercializacion", "type": "consultas", "name": "conFacturasxDespacharTransMO", "nombre": "GUIAS POR TRANSFERENCIA", "prg": 473, "dmenu": 30, "grants": 3655, "estado": "pendiente"}, {"module": "comercializacion", "type": "consultas", "name": "conGuiaRe", "nombre": "conGuiaRe.jsf", "prg": 256, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "comercializacion", "type": "consultas", "name": "conHistorialPreciosProducto", "nombre": "conHistorialPreciosProducto.jsf", "prg": 463, "dmenu": 29, "grants": 3993, "estado": "pendiente"}, {"module": "comercializacion", "type": "consultas", "name": "conLiqDevCli", "nombre": "conLiqDevCli.jsf", "prg": 221, "dmenu": 31, "grants": 3657, "estado": "pendiente"}, {"module": "comercializacion", "type": "consultas", "name": "conListadoFacturasVerificado", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comercializacion", "type": "consultas", "name": "conListadoOrdenes", "nombre": "Ordenes de Trabajo", "prg": 491, "dmenu": 25, "grants": 3645, "estado": "pendiente"}, {"module": "comercializacion", "type": "consultas", "name": "conListadoPedidos", "nombre": "conListadoPedidos.jsf", "prg": 280, "dmenu": 39, "grants": 3691, "estado": "pendiente"}, {"module": "comercializacion", "type": "consultas", "name": "conListadoPedidos2", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comercializacion", "type": "consultas", "name": "conListadoPedidosAdEmp", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comercializacion", "type": "consultas", "name": "conListadoPedidosFacturar", "nombre": "conListadoPedidosFacturar.jsf", "prg": 480, "dmenu": 3, "grants": 2200, "estado": "pendiente"}, {"module": "comercializacion", "type": "consultas", "name": "conListadoPedidosOpEmp", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comercializacion", "type": "consultas", "name": "conListadosFacturasDevolver", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comercializacion", "type": "consultas", "name": "conListaGuias", "nombre": "conListaGuias.jsf", "prg": 255, "dmenu": 35, "grants": 4014, "estado": "pendiente"}, {"module": "comercializacion", "type": "consultas", "name": "conListaPreciosEmpredial", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comercializacion", "type": "consultas", "name": "conListaPreciosGeneral", "nombre": "conListaPreciosGeneral.jsf", "prg": 553, "dmenu": 2, "grants": 1781, "estado": "pendiente"}, {"module": "comercializacion", "type": "consultas", "name": "conListaPreciosMasa", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comercializacion", "type": "consultas", "name": "conPedido", "nombre": "CONSULTA DE PEDIDOS", "prg": 284, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "comercializacion", "type": "consultas", "name": "conProductoCliente", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comercializacion", "type": "consultas", "name": "consLiqDevCli", "nombre": "consliqDevCli.jsf", "prg": 225, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "comercializacion", "type": "consultas", "name": "reporteVentasAlmespa", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comercializacion", "type": "mantenimientos", "name": "mntAgente", "nombre": "MANTENIMIENTO DE AGENTE", "prg": 100, "dmenu": 34, "grants": 3680, "estado": "migrada"}, {"module": "comercializacion", "type": "mantenimientos", "name": "mntAgenteMovil", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comercializacion", "type": "mantenimientos", "name": "mntAlmacen", "nombre": "MANTENIMIENTO DE ALMACENES", "prg": 101, "dmenu": 1, "grants": 2193, "estado": "migrada"}, {"module": "comercializacion", "type": "mantenimientos", "name": "mntAutomovil", "nombre": "mantenimiento automoviles", "prg": 492, "dmenu": 26, "grants": 3637, "estado": "migrada"}, {"module": "comercializacion", "type": "mantenimientos", "name": "mntCanal", "nombre": "MANTENIMIENTO DE CANAL", "prg": 531, "dmenu": 22, "grants": 1385, "estado": "migrada"}, {"module": "comercializacion", "type": "mantenimientos", "name": "mntClienteProductoCore", "nombre": "FACTURACION EN MASA", "prg": 850, "dmenu": 1, "grants": 1, "estado": "migrada"}, {"module": "comercializacion", "type": "mantenimientos", "name": "mntColorAutomovil", "nombre": "mantenimiento color automovil", "prg": 485, "dmenu": 26, "grants": 3637, "estado": "migrada"}, {"module": "comercializacion", "type": "mantenimientos", "name": "mntCompanias", "nombre": "mntCompanias.jsf", "prg": 361, "dmenu": 5, "grants": 17, "estado": "migrada"}, {"module": "comercializacion", "type": "mantenimientos", "name": "mntFinanciamientoIntereses", "nombre": "MANTENIMIENTO FINANCIAMIENTO", "prg": 853, "dmenu": 1, "grants": 1, "estado": "migrada"}, {"module": "comercializacion", "type": "mantenimientos", "name": "mntImpuesto", "nombre": "MANTENIMIENTO DE IMPUESTO", "prg": 102, "dmenu": 37, "grants": 3722, "estado": "migrada"}, {"module": "comercializacion", "type": "mantenimientos", "name": "mntListaPre", "nombre": "MANTENIMIENTO DE LISTA PRECIOS", "prg": 103, "dmenu": 37, "grants": 3704, "estado": "migrada"}, {"module": "comercializacion", "type": "mantenimientos", "name": "mntMigListaPreExcel", "nombre": "mntMigListaPreExcel.jsf", "prg": 444, "dmenu": 31, "grants": 3676, "estado": "migrada"}, {"module": "comercializacion", "type": "mantenimientos", "name": "mntModeloAutomovil", "nombre": "mantenimiento modelo automovil", "prg": 477, "dmenu": 2, "grants": 2206, "estado": "migrada"}, {"module": "comercializacion", "type": "mantenimientos", "name": "mntPrecios", "nombre": "MANTENIMIENTO CAMBIO DE PRECIOS", "prg": 852, "dmenu": 1, "grants": 1, "estado": "migrada"}, {"module": "comercializacion", "type": "mantenimientos", "name": "mntPreciosEmpredial", "nombre": "MANTENIMIENTO PRECIOS A CREDITO", "prg": 851, "dmenu": 1, "grants": 1, "estado": "migrada"}, {"module": "comercializacion", "type": "transacciones", "name": "trnFactMigracion", "nombre": "trnFactMigracion.jsf", "prg": 541, "dmenu": 2, "grants": 2202, "estado": "pendiente"}, {"module": "comercializacion", "type": "transacciones", "name": "trnFactMigracion2", "nombre": "trnFactMigracion2.jsf", "prg": 652, "dmenu": 3, "grants": 47, "estado": "pendiente"}, {"module": "comercializacion", "type": "transacciones", "name": "trnFactPed", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comercializacion", "type": "transacciones", "name": "trnFactPedEmp", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comercializacion", "type": "transacciones", "name": "trnFactPedImpuesto", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comercializacion", "type": "transacciones", "name": "trnFactPedTap", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comercializacion", "type": "transacciones", "name": "trnFacturacionMasaCore", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comercializacion", "type": "transacciones", "name": "trnGuiaRe", "nombre": "trnGuiaRe.jsf", "prg": 254, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "comercializacion", "type": "transacciones", "name": "trnGuiaReTrans", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comercializacion", "type": "transacciones", "name": "trnGuiaSinFac", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comercializacion", "type": "transacciones", "name": "trnLiqDevCli", "nombre": "trnLiqDevCli.jsf", "prg": 369, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "comercializacion", "type": "transacciones", "name": "trnModificarAgente", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comercializacion", "type": "transacciones", "name": "trnNcc", "nombre": "Notas de Credito", "prg": 289, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "comercializacion", "type": "transacciones", "name": "trnNccDirecto", "nombre": "trnNccDirecto.jsf", "prg": 398, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "comercializacion", "type": "varios", "name": "iFactPed", "nombre": "iFactPed.jsf", "prg": 281, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "comercializacion", "type": "varios", "name": "iFactPedImpuesto", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comercializacion", "type": "varios", "name": "iFacturaMasaCore", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comercializacion", "type": "varios", "name": "iGuiaRe", "nombre": "iGuiaRe.jsf", "prg": 253, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "comercializacion", "type": "varios", "name": "iGuiaReTrans", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comercializacion", "type": "varios", "name": "iGuiaSinFac", "nombre": "GUIA SIN FACTURA", "prg": 482, "dmenu": 30, "grants": 3669, "estado": "pendiente"}, {"module": "comercializacion", "type": "varios", "name": "iNcc", "nombre": "iNcc.jsf", "prg": 293, "dmenu": 28, "grants": 3654, "estado": "pendiente"}, {"module": "compras", "type": "consultas", "name": "conCompOrd", "nombre": "conCompOrd.jsf", "prg": 359, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "compras", "type": "consultas", "name": "conCompra", "nombre": "conCompra.jsf", "prg": 179, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "compras", "type": "consultas", "name": "conCompRelaciones", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "compras", "type": "consultas", "name": "conIngPorLiquidar", "nombre": "LISTADO DE COMPROBANTES POR LIQUIDAR", "prg": 150, "dmenu": 34, "grants": 3642, "estado": "pendiente"}, {"module": "compras", "type": "consultas", "name": "conLiqDev", "nombre": "conLiqDev.jsf", "prg": 169, "dmenu": 31, "grants": 3638, "estado": "pendiente"}, {"module": "compras", "type": "consultas", "name": "conListadoComprasDevolver", "nombre": "conListadoComprasDevolver.jsf", "prg": 503, "dmenu": 25, "grants": 3614, "estado": "pendiente"}, {"module": "compras", "type": "consultas", "name": "conListadoOrdenesCompra", "nombre": "conListadoOrdenesCompra.jsf", "prg": 355, "dmenu": 25, "grants": 3479, "estado": "pendiente"}, {"module": "compras", "type": "consultas", "name": "conListadoOrdenesCompraPrecios", "nombre": "conListadoOrdenesCompraPrecios.jsf", "prg": 467, "dmenu": 25, "grants": 3479, "estado": "pendiente"}, {"module": "compras", "type": "consultas", "name": "conObligacion", "nombre": "CONSULTA DE OBLIGACIONES", "prg": 182, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "compras", "type": "consultas", "name": "consLiqDev", "nombre": "CONSULTA DE LIQUIDACION DE DEVOLUCION", "prg": 181, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "compras", "type": "transacciones", "name": "trnCambioNoFactura", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "compras", "type": "transacciones", "name": "trnCompOrdImp", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "compras", "type": "transacciones", "name": "trnCompOrdSin", "nombre": "compra desde orden de compra", "prg": 358, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "compras", "type": "transacciones", "name": "trnCompra", "nombre": "COMPRAS DE BODEGA", "prg": 144, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "compras", "type": "transacciones", "name": "trnCompraDirecta", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "compras", "type": "transacciones", "name": "trnLiqDev", "nombre": "LIQUIDACION DE DEVOLUCIONES", "prg": 168, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "compras", "type": "transacciones", "name": "trnNcpDirecto", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "compras", "type": "transacciones", "name": "trnObligacionReembolso", "nombre": "INGRESO OBLIGACIONES", "prg": 163, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "compras", "type": "varios", "name": "iCompOrd", "nombre": "APERTURA DE IMPORTACIONES", "prg": 357, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "compras", "type": "varios", "name": "iCompra", "nombre": "INGRESOS DE COMPRAS", "prg": 143, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "compras", "type": "varios", "name": "iCompraDirecta", "nombre": "iCompraDirecta", "prg": 536, "dmenu": 17, "grants": 3595, "estado": "pendiente"}, {"module": "compras", "type": "varios", "name": "iLiquida", "nombre": "ILIQUIDA", "prg": 167, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "compras", "type": "varios", "name": "iNotaCreditoProveedorDirecta", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "compras", "type": "varios", "name": "iObliga", "nombre": "IOBLIGA", "prg": 162, "dmenu": 40, "grants": 3696, "estado": "pendiente"}, {"module": "comprobanteRecibido", "type": "transacciones", "name": "trnObligacionReembolso", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comprobanteRecibido", "type": "transacciones", "name": "trnRetencion", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comprobanteRecibido", "type": "transacciones", "name": "trnRetenciones", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "comprobanteRecibido", "type": "varios", "name": "comprobanteRecibido", "nombre": "comprobanteRecibido.jsf", "prg": 489, "dmenu": 31, "grants": 3649, "estado": "pendiente"}, {"module": "comprobanteRecibido", "type": "varios", "name": "comprobanteTalonResumen", "nombre": "comprobanteTalonResumen.jsf", "prg": 548, "dmenu": 2, "grants": 3358, "estado": "pendiente"}, {"module": "comunicados", "type": "mantenimientos", "name": "mntMejora", "nombre": "mntMejora.jsf", "prg": 784, "dmenu": 1, "grants": 2, "estado": "pendiente"}, {"module": "contabilidad", "type": "consultas", "name": "auxiliarCuentas", "nombre": "auxiliarCuentas.jsf", "prg": 443, "dmenu": 42, "grants": 3983, "estado": "pendiente"}, {"module": "contabilidad", "type": "consultas", "name": "auxiliarCuentasRango", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "contabilidad", "type": "consultas", "name": "auxiliarCuentasRangoFinal", "nombre": "Aux", "prg": 481, "dmenu": 37, "grants": 3973, "estado": "pendiente"}, {"module": "contabilidad", "type": "consultas", "name": "ayuHomeFac", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "contabilidad", "type": "consultas", "name": "balanceGeneral", "nombre": "balanceGeneral.jsf", "prg": 238, "dmenu": 36, "grants": 3992, "estado": "pendiente"}, {"module": "contabilidad", "type": "consultas", "name": "balanceGeneralDebCre", "nombre": "balanceGeneralDebCre.jsf", "prg": 511, "dmenu": 36, "grants": 3988, "estado": "pendiente"}, {"module": "contabilidad", "type": "consultas", "name": "conCcostos", "nombre": "conCcostos.jsf", "prg": 460, "dmenu": 36, "grants": 3948, "estado": "pendiente"}, {"module": "contabilidad", "type": "consultas", "name": "conClientesPorCuenta", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "contabilidad", "type": "consultas", "name": "conCuentasporComprobante", "nombre": "conCuentasporComprobante.jsf", "prg": 388, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "contabilidad", "type": "consultas", "name": "conCuentasporComprobanteCcosto", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "contabilidad", "type": "consultas", "name": "conDiario", "nombre": "conDiario.jsf", "prg": 196, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "contabilidad", "type": "consultas", "name": "conListadoComprobantes", "nombre": "LISTADO DE COMPROBANTES", "prg": 148, "dmenu": 143, "grants": 4117, "estado": "pendiente"}, {"module": "contabilidad", "type": "consultas", "name": "conListadoComprobantesPdf", "nombre": "LISTADO DE COMPROBANTES PDF", "prg": 505, "dmenu": 2, "grants": 2193, "estado": "pendiente"}, {"module": "contabilidad", "type": "consultas", "name": "conListadoFacturasElectronicas", "nombre": "conListadoFacturasElectronicas.jsf", "prg": 365, "dmenu": 98, "grants": 4104, "estado": "pendiente"}, {"module": "contabilidad", "type": "consultas", "name": "conListadoRubro", "nombre": "ReporteTipoRubro", "prg": 545, "dmenu": 2, "grants": 3895, "estado": "pendiente"}, {"module": "contabilidad", "type": "consultas", "name": "conMonitoreoComprobantes", "nombre": "MONITOREO DE COMPROBANTES", "prg": 149, "dmenu": 39, "grants": 3709, "estado": "migrada"}, {"module": "contabilidad", "type": "consultas", "name": "conRetencion", "nombre": "CONSULTA DE RETENCIONES", "prg": 174, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "contabilidad", "type": "consultas", "name": "diarioFacturacion", "nombre": "diarioFacturacion.jsf", "prg": 439, "dmenu": 44, "grants": 3991, "estado": "pendiente"}, {"module": "contabilidad", "type": "consultas", "name": "estadoResultados", "nombre": "estadoResultados.jsf", "prg": 239, "dmenu": 36, "grants": 3992, "estado": "pendiente"}, {"module": "contabilidad", "type": "consultas", "name": "estadoResultadosCcosto", "nombre": "estadoResultadosCcosto.jsf", "prg": 419, "dmenu": 34, "grants": 3943, "estado": "pendiente"}, {"module": "contabilidad", "type": "consultas", "name": "estadoResultadosMeses", "nombre": "estadoResultadosMeses.jsf", "prg": 495, "dmenu": 31, "grants": 3963, "estado": "pendiente"}, {"module": "contabilidad", "type": "mantenimientos", "name": "mntAutorizacion", "nombre": "AUTORIZACIONESD DE COMPROBANTES", "prg": 153, "dmenu": 41, "grants": 3715, "estado": "migrada"}, {"module": "contabilidad", "type": "mantenimientos", "name": "mntCanal", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "contabilidad", "type": "mantenimientos", "name": "mntCcosto", "nombre": "MANTENIMIENTO DE C. COSTOS", "prg": 75, "dmenu": 35, "grants": 3604, "estado": "migrada"}, {"module": "contabilidad", "type": "mantenimientos", "name": "mntConcepto", "nombre": "MANTENIMIENTO DE CONCEPTO", "prg": 119, "dmenu": 1, "grants": 1, "estado": "migrada"}, {"module": "contabilidad", "type": "mantenimientos", "name": "mntCTipoCom", "nombre": "MANTENIMIENTO DE TIPO DE COMPOROBANTE", "prg": 84, "dmenu": 34, "grants": 3630, "estado": "migrada"}, {"module": "contabilidad", "type": "mantenimientos", "name": "mntCuentaContable", "nombre": "MANTENIMIENTO DE CUENTAS CONTABLES", "prg": 26, "dmenu": 38, "grants": 3666, "estado": "migrada"}, {"module": "contabilidad", "type": "mantenimientos", "name": "mntEmisor", "nombre": "MANTENIMIENTO DE EMISOR", "prg": 116, "dmenu": 55, "grants": 3592, "estado": "migrada"}, {"module": "contabilidad", "type": "mantenimientos", "name": "mntGrupoCuenta", "nombre": "MANTENIMIENTO DE GRUPOS DE CUENTAS CONTABLES", "prg": 27, "dmenu": 31, "grants": 3591, "estado": "migrada"}, {"module": "contabilidad", "type": "transacciones", "name": "leerVariasRetenciones", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "contabilidad", "type": "transacciones", "name": "leerVariasRetencionesRpa", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "contabilidad", "type": "transacciones", "name": "trnCambiarConcepto", "nombre": "trnCambiarConcepto.jsf", "prg": 685, "dmenu": 3, "grants": 58, "estado": "pendiente"}, {"module": "contabilidad", "type": "transacciones", "name": "trnCambioCC", "nombre": "trnCambioCC.jsf", "prg": 413, "dmenu": 32, "grants": 3631, "estado": "pendiente"}, {"module": "contabilidad", "type": "transacciones", "name": "trnCambioCCosto", "nombre": "trnCambioCCosto.jsf", "prg": 412, "dmenu": 30, "grants": 3601, "estado": "pendiente"}, {"module": "contabilidad", "type": "transacciones", "name": "trnDesbloquearDocumentos", "nombre": "trnDesbloquearDocumentos.jsf", "prg": 336, "dmenu": 44, "grants": 3732, "estado": "pendiente"}, {"module": "contabilidad", "type": "transacciones", "name": "trnDiario", "nombre": "INGRESO DEL DIARIO GENERAL", "prg": 133, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "contabilidad", "type": "transacciones", "name": "trnImportarComprobantes", "nombre": "trnImportarComprobantes.jsf", "prg": 411, "dmenu": 62, "grants": 3664, "estado": "pendiente"}, {"module": "contabilidad", "type": "transacciones", "name": "trnModDiario", "nombre": "trnModDiario.jsf", "prg": 379, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "contabilidad", "type": "transacciones", "name": "trnReconSaldocnt", "nombre": "trnReconSaldocnt.jsf", "prg": 312, "dmenu": 33, "grants": 3702, "estado": "pendiente"}, {"module": "contabilidad", "type": "transacciones", "name": "trnRetencion", "nombre": "trnRetencion.jsf", "prg": 157, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "contabilidad", "type": "transacciones", "name": "trnRetencionNDP", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "contabilidad", "type": "transacciones", "name": "trnRevisarComprobantes", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "contabilidad", "type": "transacciones", "name": "trnRevisarCont", "nombre": "trnRevisarCont.jsf", "prg": 327, "dmenu": 7, "grants": 2492, "estado": "pendiente"}, {"module": "contabilidad", "type": "transacciones", "name": "verificarDocumentosElectronicos", "nombre": "verificarDocumentosElectronicos.jsf", "prg": 449, "dmenu": 32, "grants": 3663, "estado": "pendiente"}, {"module": "contabilidad", "type": "varios", "name": "iComproba", "nombre": "INGRESO COMPROBA", "prg": 131, "dmenu": 36, "grants": 3646, "estado": "pendiente"}, {"module": "contabilidad", "type": "varios", "name": "iRetencion", "nombre": "INGRESO RETENCION", "prg": 156, "dmenu": 40, "grants": 3665, "estado": "pendiente"}, {"module": "contabilidad", "type": "varios", "name": "iRetencionNDP", "nombre": "INGRESO RETENCION NDP", "prg": 493, "dmenu": 31, "grants": 3594, "estado": "pendiente"}, {"module": "contadoras", "type": "mantenimientos", "name": "mntClienteArchivo", "nombre": "Cliente archivo", "prg": 471, "dmenu": 6, "grants": 2321, "estado": "pendiente"}, {"module": "contadoras", "type": "mantenimientos", "name": "mntClienteProducto", "nombre": "Cliente Producto Facturacion en Masa", "prg": 475, "dmenu": 7, "grants": 2323, "estado": "pendiente"}, {"module": "contadoras", "type": "mantenimientos", "name": "mntDetalleTipoDocumento", "nombre": "DetalleTipoDocumento", "prg": 470, "dmenu": 17, "grants": 2340, "estado": "pendiente"}, {"module": "contadoras", "type": "mantenimientos", "name": "mntTipoDocumento", "nombre": "Tipo de documento", "prg": 469, "dmenu": 6, "grants": 2321, "estado": "pendiente"}, {"module": "contadoras", "type": "transacciones", "name": "trnFacturacionMasa", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "contadoras", "type": "transacciones", "name": "trnFacturacionMasaExcel", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "contadoras", "type": "varios", "name": "iFacturacionMasa", "nombre": "Facturacion en Masa", "prg": 476, "dmenu": 7, "grants": 2323, "estado": "pendiente"}, {"module": "contadoras", "type": "varios", "name": "iFacturacionMasaExcel", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "control", "type": "mantenimientos", "name": "migracionProductosClientes", "nombre": "MIGRACION CLIENTES/PROVEEDORES/PRODUCTOS", "prg": 547, "dmenu": 1, "grants": 2906, "estado": "migrada"}, {"module": "control", "type": "mantenimientos", "name": "mntBloqueo", "nombre": "MANTENIMIENTO DE BLOQUEO", "prg": 488, "dmenu": 3, "grants": 8, "estado": "migrada"}, {"module": "control", "type": "mantenimientos", "name": "mntCmenu", "nombre": "MANTENIMIENTO DE MENUS", "prg": 5, "dmenu": 1, "grants": 2188, "estado": "migrada"}, {"module": "control", "type": "mantenimientos", "name": "mntComentarios", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "control", "type": "mantenimientos", "name": "mntEmpresa", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "control", "type": "mantenimientos", "name": "mntInformacion", "nombre": "CAMBIO FIRMA Y LOGO", "prg": 472, "dmenu": 39, "grants": 3658, "estado": "migrada"}, {"module": "control", "type": "mantenimientos", "name": "mntModuloEmpresa", "nombre": "MANTENIMIENTO MODULO EMPRESA", "prg": 465, "dmenu": 34, "grants": 3633, "estado": "migrada"}, {"module": "control", "type": "mantenimientos", "name": "mntUsuario", "nombre": "MANTENIMIENTO DE USUARIOS", "prg": 1, "dmenu": 5, "grants": 2205, "estado": "migrada"}, {"module": "control", "type": "mantenimientos", "name": "mntUsuarioCliente", "nombre": "MANTENIMIENTO DE USUARIOS CLIENTES", "prg": 484, "dmenu": 1, "grants": 1, "estado": "migrada"}, {"module": "control", "type": "mantenimientos", "name": "mntUsuarioPermisos", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "control", "type": "mantenimientos", "name": "mntZonas", "nombre": "MANTENIMIENTO DE ZONA", "prg": 552, "dmenu": 1, "grants": 2191, "estado": "migrada"}, {"module": "control", "type": "mantenimientos", "name": "monitoreoComprobantes", "nombre": "monitoreoComprobantes.jsf", "prg": 451, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "control", "type": "varios", "name": "accessDenied", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "control", "type": "varios", "name": "capacitacion", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "control", "type": "varios", "name": "conMonitoreo", "nombre": "conMonitoreo.jsf", "prg": 461, "dmenu": 1, "grants": 2, "estado": "pendiente"}, {"module": "control", "type": "varios", "name": "conNuevoMonitoreo", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "control", "type": "varios", "name": "home", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "control", "type": "varios", "name": "login", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "control", "type": "varios", "name": "loginEmpresa", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "control", "type": "varios", "name": "sinSesion", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxc", "type": "consultas", "name": "conCarteraClientes", "nombre": "conCarteraClientes.jsf", "prg": 300, "dmenu": 49, "grants": 4063, "estado": "pendiente"}, {"module": "cxc", "type": "consultas", "name": "conCarteraClientesVencidos", "nombre": "conCarteraClientesVencidos.jsf", "prg": 751, "dmenu": 2, "grants": 32, "estado": "pendiente"}, {"module": "cxc", "type": "consultas", "name": "conCarteraGestion", "nombre": "conCarteraGestion.jsf", "prg": 530, "dmenu": 26, "grants": 3970, "estado": "pendiente"}, {"module": "cxc", "type": "consultas", "name": "conCruce", "nombre": "conCruce.jsf", "prg": 303, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "consultas", "name": "conDepositoPosfechado", "nombre": "condepositoposfechado", "prg": 201, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "consultas", "name": "conFacturacion", "nombre": "CONSULTA DE LA FACTURA", "prg": 193, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "consultas", "name": "conFacturasSinRetencion", "nombre": "conFacturasSinRetencion.jsf", "prg": 462, "dmenu": 28, "grants": 4002, "estado": "pendiente"}, {"module": "cxc", "type": "consultas", "name": "conKardexClientes", "nombre": "conKardexClientes.jsf", "prg": 718, "dmenu": 2, "grants": 62, "estado": "pendiente"}, {"module": "cxc", "type": "consultas", "name": "conLiqSaldos", "nombre": "conLiqSaldos.jsf", "prg": 349, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "consultas", "name": "conListadoRecibosMod", "nombre": "MODIFICACION DE RECIBOS", "prg": 508, "dmenu": 4, "grants": 2198, "estado": "pendiente"}, {"module": "cxc", "type": "consultas", "name": "conListadoRecibosMovil", "nombre": "conListadoRecibosMovil.jsf", "prg": 391, "dmenu": 8, "grants": 3366, "estado": "pendiente"}, {"module": "cxc", "type": "consultas", "name": "conMigSalCli", "nombre": "conMigSalCli.jsf", "prg": 272, "dmenu": 1, "grants": 2188, "estado": "pendiente"}, {"module": "cxc", "type": "consultas", "name": "conMovCliente", "nombre": "conMovCliente.jsf", "prg": 236, "dmenu": 52, "grants": 4085, "estado": "pendiente"}, {"module": "cxc", "type": "consultas", "name": "conNotaCreditoCliente", "nombre": "conNotaCreditoClietne.jsf", "prg": 189, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "consultas", "name": "conPago", "nombre": "conPago.jsf", "prg": 209, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "consultas", "name": "conRecibo", "nombre": "conRecibo.jsf", "prg": 197, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "consultas", "name": "conReciboGuia", "nombre": "conReciboGuia.jsf", "prg": 392, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "consultas", "name": "conReciboTemp", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxc", "type": "consultas", "name": "conRecTipoPago", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxc", "type": "consultas", "name": "conRecTipoPago2", "nombre": "conRecTipoPago2.jsf", "prg": 387, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "consultas", "name": "conRecTipoPagoRev", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxc", "type": "consultas", "name": "conReporteMor", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxc", "type": "mantenimientos", "name": "mntCatCliente", "nombre": "MANTENIMIENTO DE CAT CLIENTE", "prg": 95, "dmenu": 32, "grants": 3657, "estado": "migrada"}, {"module": "cxc", "type": "mantenimientos", "name": "mntCedulaRUC", "nombre": "mntCedulaRUC.jsf", "prg": 445, "dmenu": 32, "grants": 3625, "estado": "pendiente"}, {"module": "cxc", "type": "mantenimientos", "name": "mntCliente", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxc", "type": "mantenimientos", "name": "mntClienteAux", "nombre": "MANTENIMIENTO DE CLIENTE", "prg": 97, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "mantenimientos", "name": "mntClienteBasico", "nombre": "mntClienteBasico.jsf", "prg": 362, "dmenu": 71, "grants": 3734, "estado": "pendiente"}, {"module": "cxc", "type": "mantenimientos", "name": "mntClienteBasicoActualizado", "nombre": "mntClienteBasicoActualizado.jsf", "prg": 494, "dmenu": 2, "grants": 2, "estado": "pendiente"}, {"module": "cxc", "type": "mantenimientos", "name": "mntClienteConsulta", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxc", "type": "mantenimientos", "name": "mntClienteFinal", "nombre": "mntClienteFinal.jsf", "prg": 464, "dmenu": 2, "grants": 16, "estado": "pendiente"}, {"module": "cxc", "type": "mantenimientos", "name": "mntClienteGarante", "nombre": "mntClienteGarante.jsf", "prg": 367, "dmenu": 4, "grants": 16, "estado": "pendiente"}, {"module": "cxc", "type": "mantenimientos", "name": "mntClienteZona", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxc", "type": "mantenimientos", "name": "mntEntidadFinanciera", "nombre": "mntEntidadFinanciera.jsf", "prg": 436, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "mantenimientos", "name": "mntImagenes", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxc", "type": "mantenimientos", "name": "mntPoliticaCliente", "nombre": "MANTENIMIENTO DE POLITICAS", "prg": 99, "dmenu": 33, "grants": 3656, "estado": "migrada"}, {"module": "cxc", "type": "mantenimientos", "name": "mntTiponcCliente", "nombre": "MANTENIMIENTO DE TIPO NC", "prg": 129, "dmenu": 34, "grants": 3671, "estado": "migrada"}, {"module": "cxc", "type": "mantenimientos", "name": "mntTipoPagoCliente", "nombre": "MANTENIMIENTO DE TIPOPAGO", "prg": 128, "dmenu": 35, "grants": 3671, "estado": "migrada"}, {"module": "cxc", "type": "transacciones", "name": "facturacionExcel", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxc", "type": "transacciones", "name": "migSalCli", "nombre": "migSalCli.jsf", "prg": 270, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "transacciones", "name": "trnAfectarCxC", "nombre": "trnAfectarCxC.jsf", "prg": 173, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "transacciones", "name": "trnCamFecha", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxc", "type": "transacciones", "name": "trnCrecibo", "nombre": "trnCrecibo.jsf", "prg": 195, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "transacciones", "name": "trnCreciboFinanciamiento", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxc", "type": "transacciones", "name": "trnCruce", "nombre": "trnCruce.jsf", "prg": 302, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "transacciones", "name": "trnDepositoPosfechado", "nombre": "ingreso cheques posfechados clientes", "prg": 199, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "transacciones", "name": "trnFacturacionCompletaDismedic", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxc", "type": "transacciones", "name": "trnFacturacionIvaBusqueda", "nombre": "trnFacturacionCompleta.jsf", "prg": 363, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "transacciones", "name": "trnFacturacionIvaBusquedaC", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxc", "type": "transacciones", "name": "trnFacturacionIvaBusquedaEmp", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxc", "type": "transacciones", "name": "trnFacturacionIvaBusquedaFin", "nombre": "trnFacturacionCompletaFin.jsf", "prg": 533, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "transacciones", "name": "trnFacturacionIvaBusquedaImpuesto", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxc", "type": "transacciones", "name": "trnFacturacionRapida", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxc", "type": "transacciones", "name": "trnLiqSaldos", "nombre": "trnLiqSaldos.jsf", "prg": 347, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "transacciones", "name": "trnModPedido", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxc", "type": "transacciones", "name": "trnModPedidoEquifax", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxc", "type": "transacciones", "name": "trnModPedidoImpuesto", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxc", "type": "transacciones", "name": "trnModRecibo", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxc", "type": "transacciones", "name": "trnNotaCreditoCliente", "nombre": "trnNotaCredito.jsf", "prg": 188, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "transacciones", "name": "trnNotaDebitoCliente", "nombre": "trnNotaDebitoCliente.jsf", "prg": 395, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "transacciones", "name": "trnPedido", "nombre": "trnPedido.jsf", "prg": 278, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "transacciones", "name": "trnPedidoEquifax", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxc", "type": "transacciones", "name": "trnPedidoImpuesto", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxc", "type": "transacciones", "name": "trnReciboMovil", "nombre": "trnReciboMovil.jsf", "prg": 389, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "transacciones", "name": "trnReciboMovilEmp", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxc", "type": "transacciones", "name": "trnRevisarCxc", "nombre": "trnRevisarCxc.jsf", "prg": 328, "dmenu": 7, "grants": 2492, "estado": "pendiente"}, {"module": "cxc", "type": "transacciones", "name": "trnRevisarFac", "nombre": "trnRevisarFac.jsf", "prg": 329, "dmenu": 7, "grants": 2492, "estado": "pendiente"}, {"module": "cxc", "type": "varios", "name": "iCruce", "nombre": "iCruce.jsf", "prg": 301, "dmenu": 42, "grants": 3687, "estado": "pendiente"}, {"module": "cxc", "type": "varios", "name": "iDepositoPosfechado", "nombre": "ideposito posfechado", "prg": 200, "dmenu": 34, "grants": 3654, "estado": "pendiente"}, {"module": "cxc", "type": "varios", "name": "iFacturacion", "nombre": "IFACTURACION", "prg": 184, "dmenu": 54, "grants": 3754, "estado": "pendiente"}, {"module": "cxc", "type": "varios", "name": "iFacturacionC", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxc", "type": "varios", "name": "iFacturacionExcel", "nombre": "IFACTURACIONEXCEL", "prg": 543, "dmenu": 2, "grants": 3340, "estado": "pendiente"}, {"module": "cxc", "type": "varios", "name": "iFacturacionFin", "nombre": "IFACTURACION PAPELERIA", "prg": 479, "dmenu": 7, "grants": 2220, "estado": "pendiente"}, {"module": "cxc", "type": "varios", "name": "iFacturacionImpuesto", "nombre": "Facturacion Comstruofertas", "prg": 534, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "varios", "name": "iFacturacionRapida", "nombre": "IFACTURACIONRAPIDA", "prg": 537, "dmenu": 3, "grants": 17, "estado": "pendiente"}, {"module": "cxc", "type": "varios", "name": "iLiqSaldos", "nombre": "iLiqSaldos.jsf", "prg": 348, "dmenu": 31, "grants": 3639, "estado": "pendiente"}, {"module": "cxc", "type": "varios", "name": "iMigSalCli", "nombre": "iMigSalCli.jsf", "prg": 269, "dmenu": 3, "grants": 2912, "estado": "pendiente"}, {"module": "cxc", "type": "varios", "name": "iNccvalores", "nombre": "iNccvalores.jsf", "prg": 320, "dmenu": 41, "grants": 3730, "estado": "pendiente"}, {"module": "cxc", "type": "varios", "name": "iNotaCreditoCliente", "nombre": "iNotaCreditoCliente.jsf", "prg": 186, "dmenu": 1, "grants": 1, "estado": "pendiente"}, {"module": "cxc", "type": "varios", "name": "iNotaCreditoDirecta", "nombre": "iNotaCreditoDirecto.jsf", "prg": 399, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "varios", "name": "iNotaDebitoCliente", "nombre": "iNotaDebitoCliente.jsf", "prg": 187, "dmenu": 39, "grants": 3702, "estado": "pendiente"}, {"module": "cxc", "type": "varios", "name": "iPago", "nombre": "INGR DE PAGOS", "prg": 160, "dmenu": 67, "grants": 3723, "estado": "pendiente"}, {"module": "cxc", "type": "varios", "name": "iPedido", "nombre": "ipedido.jsf", "prg": 277, "dmenu": 40, "grants": 3687, "estado": "pendiente"}, {"module": "cxc", "type": "varios", "name": "iPedidoImpuesto", "nombre": "ipedido.jsf", "prg": 535, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "varios", "name": "iRecibo", "nombre": "iRecibo.jsf", "prg": 198, "dmenu": 54, "grants": 3779, "estado": "pendiente"}, {"module": "cxc", "type": "varios", "name": "iReciboMovil", "nombre": "iReciboMovil.jsf", "prg": 390, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxc", "type": "varios", "name": "iReciboRetElec", "nombre": "iReciboRetElec.jsf", "prg": 442, "dmenu": 39, "grants": 3710, "estado": "pendiente"}, {"module": "cxc", "type": "varios", "name": "iReciboRetElecRpa", "nombre": "iReciboRetElecRpa.jsf", "prg": 619, "dmenu": 2, "grants": 1813, "estado": "pendiente"}, {"module": "cxp", "type": "consultas", "name": "conCarteraProveedores", "nombre": "conCarteraProveedores.jsf", "prg": 326, "dmenu": 33, "grants": 4007, "estado": "pendiente"}, {"module": "cxp", "type": "consultas", "name": "conDepositoPosfechadosP", "nombre": "conDepositoPosfechadosP.jsf", "prg": 274, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxp", "type": "consultas", "name": "conMovProveedor", "nombre": "conMovProveedor.jsf", "prg": 237, "dmenu": 35, "grants": 4011, "estado": "pendiente"}, {"module": "cxp", "type": "consultas", "name": "conNotaCreditoProveedor", "nombre": "conNotaCreditoProveedor.jsf", "prg": 191, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxp", "type": "mantenimientos", "name": "mntCatProveedor", "nombre": "MANTENIMIENTO DE CAT PROVEEDOR", "prg": 106, "dmenu": 29, "grants": 3654, "estado": "pendiente"}, {"module": "cxp", "type": "mantenimientos", "name": "mntCedulaRUCProv", "nombre": "mntCedulaRUCProv.jsf", "prg": 404, "dmenu": 26, "grants": 3605, "estado": "pendiente"}, {"module": "cxp", "type": "mantenimientos", "name": "mntPoliticaProveedor", "nombre": "MANTENIMIENTO DE POLITICAS DE PROVEEDOR", "prg": 117, "dmenu": 30, "grants": 3653, "estado": "pendiente"}, {"module": "cxp", "type": "mantenimientos", "name": "mntProveedor", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxp", "type": "mantenimientos", "name": "mntProveedorBasico", "nombre": "MANTENIMIENTO DE PROVEEDORES", "prg": 105, "dmenu": 37, "grants": 3677, "estado": "pendiente"}, {"module": "cxp", "type": "mantenimientos", "name": "mntProveedorConsulta", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxp", "type": "mantenimientos", "name": "mntTiponcProveedor", "nombre": "MANTENIMIENTO DE TIPO NC PROVEEDOR", "prg": 130, "dmenu": 26, "grants": 3620, "estado": "pendiente"}, {"module": "cxp", "type": "mantenimientos", "name": "mntTipoPagoProveedor", "nombre": "TIPO PAGO DE PROVEEDORES", "prg": 152, "dmenu": 31, "grants": 3657, "estado": "pendiente"}, {"module": "cxp", "type": "transacciones", "name": "trnCruceProveedor", "nombre": "trnCruceProveedor.jsf", "prg": 305, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxp", "type": "transacciones", "name": "trnDepositoPosfechadosP", "nombre": "TRNDEPOSITOSPOSFECHADOSp", "prg": 204, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxp", "type": "transacciones", "name": "trnLiqSaldosPro", "nombre": "trnLiqSaldosPro.jsf", "prg": 453, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxp", "type": "transacciones", "name": "trnNotaCreditoProveedor", "nombre": "trnNotaCreditoProveedor.jsf", "prg": 175, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxp", "type": "transacciones", "name": "trnPago", "nombre": "INGRESO DE PAGOS A CLIENTES/PROVEEDORES", "prg": 161, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "cxp", "type": "varios", "name": "iCruceProveedor", "nombre": "iCruceProveedor.jsf", "prg": 304, "dmenu": 26, "grants": 3604, "estado": "pendiente"}, {"module": "cxp", "type": "varios", "name": "iDepositoPosfechadosP", "nombre": "IDEPOSITOPOSFECHADOPROVEEDOR", "prg": 203, "dmenu": 30, "grants": 3638, "estado": "pendiente"}, {"module": "cxp", "type": "varios", "name": "iLiqSaldos", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "cxp", "type": "varios", "name": "iLiqSaldosPro", "nombre": "iLiqSaldosPro.jsf", "prg": 452, "dmenu": 29, "grants": 3636, "estado": "pendiente"}, {"module": "cxp", "type": "varios", "name": "iNotaCreditoProveedor", "nombre": "iNotaCreditoProveedor.jsf", "prg": 176, "dmenu": 36, "grants": 3685, "estado": "pendiente"}, {"module": "cxp", "type": "varios", "name": "iNotaDebitoProveedor", "nombre": "iNotaDebitoProveedor.jsf", "prg": 192, "dmenu": 34, "grants": 3672, "estado": "pendiente"}, {"module": "facturacion_crm", "type": "mantenimientos", "name": "mntFacturacionCRM", "nombre": "IFACTURACRM", "prg": 540, "dmenu": 3, "grants": 2199, "estado": "pendiente"}, {"module": "inventarios", "type": "consultas", "name": "conAjuste", "nombre": "conAjuste.jsf", "prg": 227, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "inventarios", "type": "consultas", "name": "conConsignacion", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "inventarios", "type": "consultas", "name": "conIngBod", "nombre": "CONSULTA DE INGRESOS DIRECTO", "prg": 172, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "inventarios", "type": "consultas", "name": "conIngDevCli", "nombre": "conIngDevCli.jsf", "prg": 224, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "inventarios", "type": "consultas", "name": "conIngDevCli2", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "inventarios", "type": "consultas", "name": "conIngDevPro", "nombre": "CONSULTA DE EGRESOS", "prg": 183, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "inventarios", "type": "consultas", "name": "conIngreso", "nombre": "CONSULTA DE INGRESOS", "prg": 171, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "inventarios", "type": "consultas", "name": "conIngresosBodega", "nombre": "LISTADO DE INGRESOS principal", "prg": 140, "dmenu": 41, "grants": 3657, "estado": "pendiente"}, {"module": "inventarios", "type": "consultas", "name": "conInvBod", "nombre": "conInvBod.jsf", "prg": 307, "dmenu": 32, "grants": 4024, "estado": "pendiente"}, {"module": "inventarios", "type": "consultas", "name": "conInvBodLote", "nombre": "conInvBodLote.jsf", "prg": 549, "dmenu": 2, "grants": 3890, "estado": "pendiente"}, {"module": "inventarios", "type": "consultas", "name": "conInvBodPedidos", "nombre": "Reporte Cuencana", "prg": 546, "dmenu": 3, "grants": 3907, "estado": "pendiente"}, {"module": "inventarios", "type": "consultas", "name": "conInvBodT", "nombre": "conInvBodT.jsf", "prg": 309, "dmenu": 30, "grants": 4025, "estado": "pendiente"}, {"module": "inventarios", "type": "consultas", "name": "conListadoCompras", "nombre": "LISTADO DE COMPRAS", "prg": 166, "dmenu": 37, "grants": 3654, "estado": "pendiente"}, {"module": "inventarios", "type": "consultas", "name": "conListadoConsignacionAprobar", "nombre": "conListadoConsignacionAprobar.jsf", "prg": 423, "dmenu": 1, "grants": 1, "estado": "pendiente"}, {"module": "inventarios", "type": "consultas", "name": "conListadoFacturas", "nombre": "conListadoFacturas.jsf", "prg": 212, "dmenu": 34, "grants": 3647, "estado": "pendiente"}, {"module": "inventarios", "type": "consultas", "name": "conListadoTransferenciaAprobacion", "nombre": "conListadoTransferenciaAprobacion.jsf", "prg": 551, "dmenu": 2, "grants": 3890, "estado": "pendiente"}, {"module": "inventarios", "type": "consultas", "name": "conMovinv", "nombre": "conMovinv.jsf", "prg": 249, "dmenu": 38, "grants": 4043, "estado": "pendiente"}, {"module": "inventarios", "type": "consultas", "name": "conMovinvLote", "nombre": "conMovinvLote.jsf", "prg": 427, "dmenu": 2, "grants": 3890, "estado": "pendiente"}, {"module": "inventarios", "type": "consultas", "name": "conOrdenCompra", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "inventarios", "type": "consultas", "name": "conTransferencia", "nombre": "conTransferencia.jsf", "prg": 231, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "inventarios", "type": "mantenimientos", "name": "mntActualizarCaducidadLote", "nombre": "MODIFICAR FECHA VENCIMIENTO LOTE", "prg": 586, "dmenu": 2, "grants": 1817, "estado": "pendiente"}, {"module": "inventarios", "type": "mantenimientos", "name": "mntAutomovilMarca", "nombre": "mantenimiento marca automovil", "prg": 486, "dmenu": 26, "grants": 3637, "estado": "pendiente"}, {"module": "inventarios", "type": "mantenimientos", "name": "mntBodega", "nombre": "MANTENIMIENTO DE BODEGA", "prg": 16, "dmenu": 29, "grants": 3679, "estado": "pendiente"}, {"module": "inventarios", "type": "mantenimientos", "name": "mntCamion", "nombre": "MANTENIMIENTO DE CAMION", "prg": 29, "dmenu": 29, "grants": 3641, "estado": "pendiente"}, {"module": "inventarios", "type": "mantenimientos", "name": "mntLote", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "inventarios", "type": "mantenimientos", "name": "mntMarca", "nombre": "MANTENIMIENTO DE MARCA", "prg": 77, "dmenu": 31, "grants": 3678, "estado": "pendiente"}, {"module": "inventarios", "type": "mantenimientos", "name": "mntObservacion", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "inventarios", "type": "mantenimientos", "name": "mntProducto", "nombre": "MANTENIMIENTO DE PRODUCTO", "prg": 93, "dmenu": 39, "grants": 3743, "estado": "pendiente"}, {"module": "inventarios", "type": "mantenimientos", "name": "mntProductoBasico", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "inventarios", "type": "mantenimientos", "name": "mntProductoImagen", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "inventarios", "type": "mantenimientos", "name": "mntSerie", "nombre": "MANTENIMIENTO DE SERIE", "prg": 79, "dmenu": 25, "grants": 3641, "estado": "pendiente"}, {"module": "inventarios", "type": "mantenimientos", "name": "mntTipoProducto", "nombre": "MANTENIMIENTO DE TIPO DE PRODUCTO", "prg": 87, "dmenu": 31, "grants": 3713, "estado": "pendiente"}, {"module": "inventarios", "type": "mantenimientos", "name": "mntTipoRubro", "nombre": "MntTipoRubro", "prg": 544, "dmenu": 2, "grants": 3374, "estado": "pendiente"}, {"module": "inventarios", "type": "mantenimientos", "name": "mntUbicacioninv", "nombre": "MANTENIMIENTO DE UBICACION INV", "prg": 120, "dmenu": 25, "grants": 3643, "estado": "pendiente"}, {"module": "inventarios", "type": "mantenimientos", "name": "mntUnidadMedida", "nombre": "MANTENIMIENTO DE UNIDAD", "prg": 25, "dmenu": 30, "grants": 3679, "estado": "pendiente"}, {"module": "inventarios", "type": "mantenimientos", "name": "mntUtilidad", "nombre": "MANTENIMIENTO DE UTILIAD POR TIPO DE PRODUCTO", "prg": 468, "dmenu": 25, "grants": 3641, "estado": "pendiente"}, {"module": "inventarios", "type": "transacciones", "name": "migSalInv", "nombre": "migSalInv.jsf", "prg": 261, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "inventarios", "type": "transacciones", "name": "trnAjuste", "nombre": "INGRESO AJUSTE", "prg": 159, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "inventarios", "type": "transacciones", "name": "trnAjusteCcn", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "inventarios", "type": "transacciones", "name": "trnConsignacion", "nombre": "trnConsignacion.jsf", "prg": 422, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "inventarios", "type": "transacciones", "name": "trnConsumo", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "inventarios", "type": "transacciones", "name": "trnIngBodega", "nombre": "INGRESO DE BODEGA", "prg": 141, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "inventarios", "type": "transacciones", "name": "trnIngDevCli", "nombre": "trnIngDevCli.jsf", "prg": 213, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "inventarios", "type": "transacciones", "name": "trnIngDevPro", "nombre": "DEVOLUCION A PROVEEDORES", "prg": 165, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "inventarios", "type": "transacciones", "name": "trnIngPreliquidados", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "inventarios", "type": "transacciones", "name": "trnModBodega", "nombre": "MODIFICACION DE INGRESOS A BODEGA", "prg": 170, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "inventarios", "type": "transacciones", "name": "trnModOrden", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "inventarios", "type": "transacciones", "name": "trnOrdenCompra", "nombre": "trnOrdenCompra.jsf", "prg": 354, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "inventarios", "type": "transacciones", "name": "trnPasarSaldoinv", "nombre": "saldos iniciales", "prg": 322, "dmenu": 33, "grants": 3699, "estado": "pendiente"}, {"module": "inventarios", "type": "transacciones", "name": "trnProduccion", "nombre": "trnProduccion.jsf", "prg": 407, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "inventarios", "type": "transacciones", "name": "trnReconSaldocosto", "nombre": "trnReconSaldocosto.jsf", "prg": 314, "dmenu": 58, "grants": 4084, "estado": "pendiente"}, {"module": "inventarios", "type": "transacciones", "name": "trnReconSaldoinv", "nombre": "trnReconSaldoinv.jsf", "prg": 313, "dmenu": 30, "grants": 3669, "estado": "pendiente"}, {"module": "inventarios", "type": "transacciones", "name": "trnRevisarInv", "nombre": "trnRevisarInv.jsf", "prg": 335, "dmenu": 7, "grants": 2492, "estado": "pendiente"}, {"module": "inventarios", "type": "transacciones", "name": "trnTransferencia", "nombre": "trnTransferencia.jsf", "prg": 229, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "inventarios", "type": "transacciones", "name": "trnTransferenciaAprobacion", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "inventarios", "type": "varios", "name": "iAjuste", "nombre": "AJUSTES", "prg": 158, "dmenu": 37, "grants": 3655, "estado": "pendiente"}, {"module": "inventarios", "type": "varios", "name": "iAjusteCcn", "nombre": "EGRESO DE INVENTARIO", "prg": 506, "dmenu": 5, "grants": 2242, "estado": "pendiente"}, {"module": "inventarios", "type": "varios", "name": "iBodega", "nombre": "INGRESO BODEGA", "prg": 142, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "inventarios", "type": "varios", "name": "iConsignacion", "nombre": "iConsignacion.jsf", "prg": 421, "dmenu": 35, "grants": 3646, "estado": "pendiente"}, {"module": "inventarios", "type": "varios", "name": "iConsumo", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "inventarios", "type": "varios", "name": "iDevolucion", "nombre": "IDEVOLUCION", "prg": 164, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "inventarios", "type": "varios", "name": "iDevolucionCli", "nombre": "iDevolucionCli.jsf", "prg": 214, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "inventarios", "type": "varios", "name": "iMigInv", "nombre": "iMigInv.jsf", "prg": 260, "dmenu": 26, "grants": 3558, "estado": "pendiente"}, {"module": "inventarios", "type": "varios", "name": "iOrdenCompra", "nombre": "iOrdenCompra.jsf", "prg": 353, "dmenu": 25, "grants": 3479, "estado": "pendiente"}, {"module": "inventarios", "type": "varios", "name": "iPreliquidado", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "inventarios", "type": "varios", "name": "iProduccion", "nombre": "iProduccion.jsf", "prg": 406, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "inventarios", "type": "varios", "name": "iTransferencia", "nombre": "iTransferencia.jsf", "prg": 230, "dmenu": 41, "grants": 3684, "estado": "pendiente"}, {"module": "inventarios", "type": "varios", "name": "iTransferenciaAprobacion", "nombre": "iTransferenciaAprobacion.jsf", "prg": 550, "dmenu": 2, "grants": 3293, "estado": "pendiente"}, {"module": "nominas", "type": "consultas", "name": "conFormatoBancos", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "nominas", "type": "consultas", "name": "conRolPagos", "nombre": "conRolPagos.jsf", "prg": 529, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "nominas", "type": "mantenimientos", "name": "mntAgenteNomina", "nombre": "mntAgenteNomina.jsf", "prg": 516, "dmenu": 2, "grants": 2207, "estado": "pendiente"}, {"module": "nominas", "type": "mantenimientos", "name": "mntAnticipos", "nombre": "mntAnticipos.jsf", "prg": 514, "dmenu": 2, "grants": 2207, "estado": "pendiente"}, {"module": "nominas", "type": "mantenimientos", "name": "mntCargas", "nombre": "mntCargas.jsf", "prg": 526, "dmenu": 2, "grants": 2207, "estado": "pendiente"}, {"module": "nominas", "type": "mantenimientos", "name": "mntCargos", "nombre": "mntCargos.jsf", "prg": 525, "dmenu": 2, "grants": 2207, "estado": "pendiente"}, {"module": "nominas", "type": "mantenimientos", "name": "mntDepartamento", "nombre": "mntDepartamento.jsf", "prg": 517, "dmenu": 2, "grants": 2207, "estado": "pendiente"}, {"module": "nominas", "type": "mantenimientos", "name": "mntEmpleadoFormula", "nombre": "mntEmpleadoFormula.jsf", "prg": 524, "dmenu": 2, "grants": 2207, "estado": "pendiente"}, {"module": "nominas", "type": "mantenimientos", "name": "mntEstadoCivil", "nombre": "mntEstadoCivil.jsf", "prg": 523, "dmenu": 2, "grants": 2207, "estado": "pendiente"}, {"module": "nominas", "type": "mantenimientos", "name": "mntEstados", "nombre": "mntEstados.jsf", "prg": 522, "dmenu": 2, "grants": 2207, "estado": "pendiente"}, {"module": "nominas", "type": "mantenimientos", "name": "mntExcentos", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "nominas", "type": "mantenimientos", "name": "mntFormula", "nombre": "mntRolPagos.jsf", "prg": 519, "dmenu": 2, "grants": 2207, "estado": "pendiente"}, {"module": "nominas", "type": "mantenimientos", "name": "mntNivelAcademico", "nombre": "mntNivelAcademico.jsf", "prg": 521, "dmenu": 2, "grants": 2207, "estado": "pendiente"}, {"module": "nominas", "type": "mantenimientos", "name": "mntPasarFormula", "nombre": "mntEmpleadoFormula.jsf", "prg": 518, "dmenu": 2, "grants": 2207, "estado": "pendiente"}, {"module": "nominas", "type": "mantenimientos", "name": "mntTipoCargas", "nombre": "mntTipoCargas.jsf", "prg": 520, "dmenu": 2, "grants": 2207, "estado": "pendiente"}, {"module": "nominas", "type": "transacciones", "name": "modRolPagos", "nombre": "modRolPagos.jsf", "prg": 527, "dmenu": 0, "grants": 1, "estado": "muerta"}, {"module": "nominas", "type": "transacciones", "name": "trnAnticipo", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "nominas", "type": "transacciones", "name": "trnCrol", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "nominas", "type": "transacciones", "name": "trnPrestamo", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "nominas", "type": "varios", "name": "iNomAnticipo", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "nominas", "type": "varios", "name": "iNomCrol", "nombre": "iNomCrol.jsf", "prg": 515, "dmenu": 2, "grants": 2207, "estado": "pendiente"}, {"module": "nominas", "type": "varios", "name": "iNomPrestamo", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "proyecto", "type": "consultas", "name": "balanceGeneralProyecto", "nombre": "BALANCE GENERAL", "prg": 501, "dmenu": 2, "grants": 2200, "estado": "pendiente"}, {"module": "proyecto", "type": "consultas", "name": "conCarteraClientesProyecto", "nombre": "CARTERA DE CLIENTES POR PROYECTO", "prg": 499, "dmenu": 2, "grants": 2200, "estado": "pendiente"}, {"module": "proyecto", "type": "consultas", "name": "conCarteraProveedoresProyecto", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "proyecto", "type": "consultas", "name": "conClientesPorCuentaProyecto", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "proyecto", "type": "consultas", "name": "conCuentasporComprobanteProyecto", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "proyecto", "type": "consultas", "name": "estadoResultadosProyecto", "nombre": "ESTADO DE RESULTADOS", "prg": 500, "dmenu": 2, "grants": 2200, "estado": "pendiente"}, {"module": "proyecto", "type": "mantenimientos", "name": "mntProyecto", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "proyecto", "type": "transacciones", "name": "trnCambioProyecto", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "reportes", "type": "consultas", "name": "conReportesCartera", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "sistema", "type": "mantenimientos", "name": "mntParametro", "nombre": "MANTENIMIENTO DE PARAMETRO", "prg": 7, "dmenu": 8, "grants": 2195, "estado": "migrada"}, {"module": "sri", "type": "mantenimientos", "name": "mntSriConcepto", "nombre": "SRI CONCEPTOS DE RETENCION", "prg": 145, "dmenu": 32, "grants": 3663, "estado": "pendiente"}, {"module": "sri", "type": "mantenimientos", "name": "mntSriCtributario", "nombre": "SRI CREDITO TRIBUTARIO", "prg": 146, "dmenu": 7, "grants": 2473, "estado": "pendiente"}, {"module": "sri", "type": "mantenimientos", "name": "mntSriTipocom", "nombre": "SRI TIPOS DE COMPROBANTES", "prg": 147, "dmenu": 7, "grants": 2473, "estado": "pendiente"}, {"module": "sri", "type": "transacciones", "name": "cierreMensual", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}, {"module": "sri", "type": "transacciones", "name": "datosAnexos", "nombre": "datosAnexos.jsf", "prg": 381, "dmenu": 31, "grants": 3663, "estado": "pendiente"}, {"module": "sri", "type": "transacciones", "name": "datosAnexosSemestral", "nombre": "datosAnexosSemestral.jsf", "prg": 454, "dmenu": 31, "grants": 3663, "estado": "pendiente"}, {"module": "sri", "type": "transacciones", "name": "DatosDinardap", "nombre": "DatosDinardap.jsf", "prg": 334, "dmenu": 48, "grants": 3865, "estado": "pendiente"}, {"module": "sri", "type": "transacciones", "name": "datosFormCientoCuatro", "nombre": "datosForm104.jsf", "prg": 513, "dmenu": 30, "grants": 3663, "estado": "pendiente"}, {"module": "sri", "type": "transacciones", "name": "datosFormct", "nombre": "datosFormct.jsf", "prg": 512, "dmenu": 30, "grants": 3663, "estado": "pendiente"}, {"module": "usuarioExample", "type": "varios", "name": "usuarioExample", "nombre": null, "prg": null, "dmenu": 0, "grants": 0, "estado": "fragmento"}];
+
+const ESTADOS = [
+  { id:"migrada",   label:"Migradas",   cls:"c-mig",  pcls:"p-migrada",   sub:"reconstruidas" },
+  { id:"pendiente", label:"Pendientes", cls:"c-pen",  pcls:"p-pendiente", sub:"por migrar (vivas)" },
+  { id:"muerta",    label:"Sin uso",    cls:"c-dead", pcls:"p-muerta",    sub:"0 menús activos" },
+  { id:"fragmento", label:"Fragmentos", cls:"c-frag", pcls:"p-fragmento", sub:"includes / pickers" },
+];
+const ESTLABEL = { migrada:"Migrada", pendiente:"Pendiente", muerta:"Sin uso", fragmento:"Fragmento" };
+const TYPE_DESC = {
+  mantenimientos:"Maestros y catálogos (CRUD)",
+  transacciones:"Documentos y operaciones",
+  consultas:"Listados y consultas",
+  varios:"Utilitarios y procesos",
+  "(raíz)":"Página suelta del módulo",
+};
+
+const state = {
+  q:"",
+  estados: new Set(["migrada","pendiente","muerta","fragmento"]),
+  types: new Set(),      // empty = all
+  mods: new Set(),       // empty = all
+  onlyPend: false,
+  closed: new Set(),
+};
+
+const $ = s => document.querySelector(s);
+const byEst = id => PAGES.filter(p => p.estado===id).length;
+
+/* ---------- global summary (never filtered) ---------- */
+function paintSummary(){
+  const mig = byEst("migrada"), pen = byEst("pendiente"), dead = byEst("muerta"), frag = byEst("fragmento");
+  const vivas = mig + pen;
+  const pct = vivas ? (100*mig/vivas) : 0;
+  $("#dpct").textContent = pct.toFixed(1);
+  $("#dfrac").textContent = mig + " / " + vivas;
+  $("#hnum").textContent = pct.toFixed(0) + "%";
+  $("#hbar").style.width = pct + "%";
+  // stacked bar over the full universe
+  const tot = PAGES.length;
+  $("#stack").innerHTML =
+    seg("s-mig", mig, tot, "Migradas") + seg("s-pen", pen, tot, "Pendientes") +
+    seg("s-dead", dead, tot, "Sin uso") + seg("s-frag", frag, tot, "Fragmentos");
+  // cards
+  const counts = { migrada:mig, pendiente:pen, muerta:dead, fragmento:frag };
+  $("#cards").innerHTML = ESTADOS.map(e => `
+    <button class="card ${e.cls} ${state.estados.has(e.id)?"":"off"}" data-est="${e.id}">
+      <div class="k"><span class="dot"></span>${e.label}</div>
+      <div class="v">${counts[e.id]}</div>
+      <div class="sub">${e.sub}</div>
+    </button>`).join("");
+  document.querySelectorAll(".card").forEach(c => c.onclick = () => {
+    const id = c.dataset.est;
+    if (state.estados.has(id) && state.estados.size===ESTADOS.length){ state.estados = new Set([id]); }
+    else if (state.estados.has(id)){ state.estados.delete(id); if(!state.estados.size) state.estados = new Set(ESTADOS.map(x=>x.id)); }
+    else { state.estados.add(id); }
+    render();
+  });
+}
+function seg(cls, n, tot, title){
+  if(!n) return "";
+  return `<i class="${cls}" style="width:${100*n/tot}%" title="${title}: ${n}"></i>`;
+}
+
+/* ---------- chips ---------- */
+function paintChips(){
+  const estWrap = $("#estadoChips");
+  estWrap.innerHTML = ESTADOS.map(e =>
+    `<button class="chip ${state.estados.has(e.id)?"on":""}" data-est="${e.id}">${e.label} <span class="c">${byEst(e.id)}</span></button>`).join("");
+  estWrap.querySelectorAll(".chip").forEach(c => c.onclick = () => {
+    const id=c.dataset.est;
+    state.estados.has(id) ? state.estados.delete(id) : state.estados.add(id);
+    if(!state.estados.size) state.estados = new Set(ESTADOS.map(x=>x.id));
+    render();
+  });
+
+  const types = [...new Set(PAGES.map(p=>p.type))].sort();
+  $("#typeChips").innerHTML = types.map(t =>
+    `<button class="chip ${state.types.has(t)?"on":""}" data-type="${t}">${t} <span class="c">${PAGES.filter(p=>p.type===t).length}</span></button>`).join("");
+  $("#typeChips").querySelectorAll(".chip").forEach(c => c.onclick = () => {
+    const t=c.dataset.type; state.types.has(t)?state.types.delete(t):state.types.add(t); render();
+  });
+
+  const mods = [...new Set(PAGES.map(p=>p.module))].sort((a,b)=>
+    PAGES.filter(p=>p.module===b&&p.estado==="pendiente").length - PAGES.filter(p=>p.module===a&&p.estado==="pendiente").length);
+  $("#modChips").innerHTML = mods.map(m => {
+    const pend = PAGES.filter(p=>p.module===m&&p.estado==="pendiente").length;
+    return `<button class="chip ${state.mods.has(m)?"on":""}" data-mod="${m}">${m} <span class="c">${pend}</span></button>`;
+  }).join("");
+  $("#modChips").querySelectorAll(".chip").forEach(c => c.onclick = () => {
+    const m=c.dataset.mod; state.mods.has(m)?state.mods.delete(m):state.mods.add(m); render();
+  });
+}
+
+/* ---------- filtered list ---------- */
+function filtered(){
+  const q = state.q.trim().toLowerCase();
+  return PAGES.filter(p => {
+    if(!state.estados.has(p.estado)) return false;
+    if(state.types.size && !state.types.has(p.type)) return false;
+    if(state.mods.size && !state.mods.has(p.module)) return false;
+    if(q && !(p.name.toLowerCase().includes(q) || (p.nombre||"").toLowerCase().includes(q) || p.module.includes(q))) return false;
+    return true;
+  });
+}
+
+function render(){
+  paintSummary(); paintChips();
+  const rows = filtered();
+  // group by module -> type
+  const mods = {};
+  rows.forEach(p => { (mods[p.module] ??= {})[p.type] ??= []; mods[p.module][p.type].push(p); });
+  let modNames = Object.keys(mods).sort();
+  if(state.onlyPend) modNames = modNames.filter(m => PAGES.some(p=>p.module===m&&p.estado==="pendiente"));
+
+  const cont = $("#modules");
+  if(!modNames.length){ cont.innerHTML = `<div class="empty">Sin resultados con estos filtros.</div>`; return; }
+
+  cont.innerHTML = modNames.map(m => {
+    const all = PAGES.filter(p=>p.module===m);
+    const mig = all.filter(p=>p.estado==="migrada").length;
+    const pen = all.filter(p=>p.estado==="pendiente").length;
+    const vivas = mig+pen;
+    const pct = vivas ? Math.round(100*mig/vivas) : 0;
+    const shown = Object.values(mods[m]).reduce((a,b)=>a+b.length,0);
+    const isClosed = state.closed.has(m);
+    const types = Object.keys(mods[m]).sort();
+    const body = types.map(t => `
+      <div class="type-grp">
+        <div class="type-head">${t} <span class="desc">${TYPE_DESC[t]||""}</span> · <span>${mods[m][t].length}</span></div>
+        <div class="rows">
+          ${mods[m][t].sort((a,b)=>a.name.localeCompare(b.name)).map(rowHTML).join("")}
+        </div>
+      </div>`).join("");
+    return `
+      <section class="mod ${isClosed?"closed":""}" data-mod="${m}">
+        <div class="mod-head">
+          <span class="caret">▼</span>
+          <span class="mod-name">${m}</span>
+          <span class="mod-meta">${shown} vis · ${vivas} vivas</span>
+          <span class="mod-bar"><i class="b-mig" style="width:${vivas?100*mig/vivas:0}%"></i><i class="b-pen" style="width:${vivas?100*pen/vivas:0}%"></i></span>
+          <span class="mod-pct">${pct}%</span>
+        </div>
+        <div class="mod-body">${body}</div>
+      </section>`;
+  }).join("");
+
+  cont.querySelectorAll(".mod-head").forEach(h => h.onclick = () => {
+    const m = h.parentElement.dataset.mod;
+    state.closed.has(m) ? state.closed.delete(m) : state.closed.add(m);
+    h.parentElement.classList.toggle("closed");
+  });
+}
+
+function rowHTML(p){
+  const menus = p.prg==null ? `<span class="mut">sin prg</span>`
+    : `<span><b>${p.dmenu}</b> menús</span><span>${p.grants} perm.</span>${p.prg?`<span class="mut">#${p.prg}</span>`:""}`;
+  const desc = p.nombre && !/\.jsf$/i.test(p.nombre) ? p.nombre : "";
+  return `
+    <div class="row e-${p.estado}">
+      <span class="pill p-${p.estado}"><span class="dot"></span>${ESTLABEL[p.estado]}</span>
+      <span class="r-name" title="${p.name}">${p.name}</span>
+      <span class="r-desc" title="${desc}">${desc}</span>
+      <span class="r-meta">${menus}</span>
+    </div>`;
+}
+
+$("#q").addEventListener("input", e => { state.q = e.target.value; render(); });
+$("#onlyPend").addEventListener("change", e => { state.onlyPend = e.target.checked; render(); });
+$("#gendate").textContent = document.currentScript?.dataset?.gen || "2026-07-07";
+
+render();
+</script>
